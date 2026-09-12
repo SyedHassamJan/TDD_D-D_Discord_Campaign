@@ -1,0 +1,290 @@
+Codex factions: [{'name': 'Dale'}, {'name': 'Dol Guldur'}, {'name': 'Goblins'}, {'name': 'Gondor'}, {'name': 'Rhun'}]
+Codex total units: 117
+EMBLEMS keys: ['Dale', 'Dol Guldur', 'DolGulDur', 'Dorwinion', 'Dorvinion', 'Rhun', 'Goblins', 'Gondor', 'Rhun', 'Rhûn']
+REALM_OF:
+const REALM_OF={"Dale":"Dale","Gondor":"Gondor","Dol Guldur":"Dol Guldur","Dol Gul Dur":"Dol Guldur","Rhun":"Rhun","Rhûn":"Rhun","Goblins":"Goblins","Dorwinion":"Dorwinion","Castile":"Gondor","Leon":"Gondor","León":"Gondor","Aragon":"Dol Guldur","Aragón":"Dol Guldur","Navarre":"Rhun","Almohads":"Goblins","Almohad":"Goblins","Marinids":"Rhun","Marinid":"Rhun","Portugal":"Dorwinion"};
+const REALM_FAC={};Object.keys(REALM_OF).forEach(k=>{if(F[k])REALM_FAC[REALM_OF[k]]=k;});
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const nz=v=>(v===null||v===undefined||v==="")?null:v;
+const unitMen=k=>{const u=cxBy[k];return u&&u.men?u.men:0;};
+function syncMen(a){if(Array.isArray(a.units)){a.men=a.units.reduce((s,k)=>s+unitMen(k),0);a.upkeep=a.units.reduce((s,k)=>s+((cxBy[k]||{}).upkeep||0),0);}}
+function syncAll(){S.armies.forEach(a=>{if(a.units!==undefined&&!Array.isArray(a.units))a.units=null;syncMen(a);});}
+function canServe(u,fid){
+  if(!u)return false;
+  const realm=REALM_OF[fid];
+  return realm?u.factions.indexOf(realm)>-1:true;
+}
+S.armies.forEach(a=>{a.units??=null;});syncAll();
+
+/* ---------- state ---------- */
+let cxRealm="",cxQ="",cxCls="",cxSort="name",cxArmy=null,cxSel=null,cxInspect=null;
+const cx=$("codex");
+
+/* ---------- filtering ---------- */
+function cxList(){
+  const q=cxQ.trim().toLowerCase();
+  return CX.units.filter(u=>{
+    if(cxInspect){if((cxInspect.units||[]).indexOf(u.unit_key)===-1)return false;}
+    else{
+      if(cxArmy&&!canServe(u,cxArmy.faction))return false;
+      if(!cxArmy&&cxRealm&&u.factions.indexOf(cxRealm)===-1)return false;
+    }
+    if(cxCls&&u.class!==cxCls)return false;
+    if(q){const hay=(u.name+" "+u.unit_key+" "+u.class_name+" "+(u.abilities||"")+" "+(u.attributes||"")).toLowerCase();
+      if(hay.indexOf(q)===-1)return false;}
+    return true;
+  }).sort((a,b)=>cxSort==="name"?(a.name||"").localeCompare(b.name||"")
+    :((+b[cxSort]||0)-(+a[cxSort]||0)||(a.name||"").localeCompare(b.name||"")));
+}
+function countIn(k){const src=cxArmy||cxInspect;return src&&src.units?src.units.filter(x=>x===k).length:0;}
+function countRank(k,r){const src=cxArmy||cxInspect;if(!src||!Array.isArray(src.units))return 0;
+  if(!Array.isArray(src.xp))return r===0?src.units.filter(x=>x===k).length:0;
+  let c=0;src.units.forEach((uk,i)=>{if(uk===k&&((src.xp[i]||0)===r))c++;});return c;}
+
+/* ---------- grid ---------- */
+
+function cxCard(u,rank){
+  const ic=CODEX_ICONS[u.unit_key];
+  const n=(cxArmy&&!cxArmy._plan)?countRank(u.unit_key,0):countIn(u.unit_key);
+  const full=cxArmy&&cxArmy.units.length>=CAPU;
+  return `<div class="cxcard${cxSel===u.unit_key?" sel":""}" data-cxk="${esc(u.unit_key)}">
+    <div class="prt">${ic?`<img loading="lazy" src="${ic}">`:""}<span class="cost">${u.cost}g</span></div>
+    <div class="nm">${esc(u.name)}</div><div class="cl">${esc(u.class_name)}</div>
+    <div class="ms">
+      <div><div class="v">${u.men??"–"}</div><div class="k">Men</div></div>
+      <div><div class="v">${u.melee_attack??"–"}</div><div class="k">Atk</div></div>
+      <div><div class="v">${u.melee_defence??"–"}</div><div class="k">Def</div></div>
+      <div><div class="v">${u.armour_value??"–"}</div><div class="k">Arm</div></div>
+    </div>
+    ${rank>=1?`<div class="xrow"><button class="xb gm" data-cxv="${esc(u.unit_key)}|${rank}|-1" title="One regiment loses a chevron">−</button><span class="n">${countRank(u.unit_key,rank)}×</span>${chevMark(rank)}<button class="xb gm" data-cxv="${esc(u.unit_key)}|${rank}|1" title="One regiment gains a chevron">+</button></div>`
+  :cxArmy?`<div class="mrow"><button data-cxrm="${esc(u.unit_key)}" ${n?"":"disabled"}>−</button>
+      <span class="n">${n||""}</span>
+      <button data-cxad="${esc(u.unit_key)}" ${full?"disabled":""}>+</button></div>${(!cxArmy._plan&&n)?`<div class="xrow"><span class="n">${n}×</span><span class="x0">◦</span><button class="xb gm" data-cxv="${esc(u.unit_key)}|0|1" title="One regiment gains a chevron">+</button></div>`:""}`
+  :cxInspect?`<div class="xrow"><span class="n">${countRank(u.unit_key,0)}×</span><span class="x0">◦</span></div>`:""}
+  </div>`;
+}
+
+function cxRender(){
+  const list=cxList();
+  const _a=(cxArmy&&!cxArmy._plan)?cxArmy:cxInspect;
+  let ents;
+  if(_a&&Array.isArray(_a.units)){ensureXp(_a);
+    ents=[];
+    for(const u of list){
+      const ranks=[...new Set(_a.units.map((k,i)=>k===u.unit_key?(_a.xp[i]||0):null).filter(x=>x!==null&&x>0))].sort((x,y)=>x-y);
+      if(cxInspect){if(countRank(u.unit_key,0)>0)ents.push({u,rank:0});}
+      else ents.push({u,rank:null});
+      ranks.forEach(r=>ents.push({u,rank:r}));
+    }
+  } else ents=list.map(u=>({u,rank:null}));
+  const _g=$("cxGrid");const _st=_g.scrollTop;_g.innerHTML=ents.map(en=>cxCard(en.u,en.rank)).join("")||'<div style="color:var(--dimmer);padding:30px;font-size:13px">No unit answers that call.</div>';
+  $("cxCount").textContent=list.length+" / "+CX.units.length+" units";
+  document.querySelectorAll("#cxRealms .cxchip").forEach(c=>c.classList.toggle("on",c.dataset.r===cxRealm));
+  cxFoot();
+  _g.scrollTop=_st;
+}
+function cxFoot(){
+  if(!cxArmy)return;
+  const n=cxArmy.units.length;
+  let sb="";for(let i=0;i<CAPU;i++)sb+=`<i class="${i<n?"f":""}"></i>`;
+  $("cxSlots").innerHTML=sb;
+  const cost=cxArmy.units.reduce((s,k)=>s+((cxBy[k]||{}).cost||0),0);
+  const upk=cxArmy.units.reduce((s,k)=>s+((cxBy[k]||{}).upkeep||0),0);
+  $("cxTots").innerHTML=cxArmy.holy
+    ? `<b>${n}</b>/${CAPU} units &nbsp; <b>${cxArmy.men.toLocaleString()}</b> men &nbsp; <span style="color:var(--brass)">sworn to the holy war &mdash; no cost, no upkeep</span>`
+    : `<b>${n}</b>/${CAPU} units &nbsp; <b>${cxArmy.men.toLocaleString()}</b> men &nbsp; <b>${cost.toLocaleString()}</b>g raise &nbsp; <b>${upk.toLocaleString()}</b>g/turn`;
+  const em=EMBLEMS[cxArmy.faction];
+  $("cxMusterTag").innerHTML=(em?`<img src="${em}">`:"")+
+    (cxArmy._plan?`Planning for ${esc(cxArmy.faction)} — copy it to your GM when done`
+                 :`Mustering: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)}`);
+  $("cxDone").textContent=cxArmy._plan?"Close plan":"Done mustering";
+}
+
+/* ---------- detail ---------- */
+function cxBar(l,k,v){
+  const has=nz(v)!==null,mx=CX.max[k]||0;
+  const pct=has&&mx?Math.max(2,Math.min(100,v/mx*100)):0;
+  return `<div class="cxstat${has?"":" na"}"><div class="sl">${l}</div>
+    <div class="sb">${has?`<div class="sf" style="width:${pct}%"></div>`:""}</div>
+    <div class="sv">${has?v:"–"}</div></div>`;
+}
+function cxDetail(k){
+  cxSel=k;const u=cxBy[k];if(!u){$("cxSide").classList.remove("open");return;}
+  const ic=CODEX_ICONS[k];
+  let h=`<div class="hd">${ic?`<img src="${ic}">`:""}<div>
+    <h3>${esc(u.name)}</h3><div class="sub">${esc(u.class_name)} · ${esc(u.category_name)}</div>
+    ${u.description_short?`<div class="desc">${esc(u.description_short)}</div>`:""}
+  </div></div>`;
+  h+=`<div class="sx"><span class="lbl">Fielded by</span><div class="cxtags">`+
+    u.factions.map(r=>{const fid=REALM_FAC[r];const em=(fid&&EMBLEMS[fid])||(window.CODEX_FLAGS||{})[r];
+      return `<span class="cxtag">${em?`<img src="${em}" style="width:13px;height:13px;border-radius:50%;vertical-align:-2px"> `:""}${esc(r)}</span>`;}).join("")+`</div></div>`;
+  h+=`<div class="sx"><span class="lbl">Campaign</span>`+cxBar("Men","men",u.men)+cxBar("Cost","cost",u.cost)+cxBar("Upkeep","upkeep",u.upkeep)+`</div>`;
+  h+=`<div class="sx"><span class="lbl">Melee</span>`+cxBar("Attack","melee_attack",u.melee_attack)+
+    cxBar("Defence","melee_defence",u.melee_defence)+cxBar("Charge","charge_bonus",u.charge_bonus)+
+    cxBar("Damage","weapon_damage",u.weapon_damage)+cxBar("AP damage","weapon_ap_damage",u.weapon_ap_damage)+
+    cxBar("Morale","morale",u.morale)+`</div>`;
+  h+=`<div class="sx"><span class="lbl">Defence</span>`+cxBar("Armour","armour_value",u.armour_value)+
+    cxBar("Shield","shield_defence",u.shield_defence)+cxBar("Hit points","hit_points_total",u.hit_points_total)+`</div>`;
+  if(nz(u.missile_range)!==null)
+    h+=`<div class="sx"><span class="lbl">Missile</span>`+cxBar("Range","missile_range",u.missile_range)+
+      cxBar("Damage","missile_damage",u.missile_damage)+cxBar("AP","missile_ap_damage",u.missile_ap_damage)+
+      cxBar("Accuracy","accuracy",u.accuracy)+cxBar("Ammo","ammo",u.ammo)+`</div>`;
+  h+=`<div class="sx"><span class="lbl">Movement</span>`+cxBar("Speed","speed",u.speed)+
+    cxBar("Charge spd","charge_speed",u.charge_speed)+cxBar("Mass","mass",u.mass)+`</div>`;
+  if(u.abilities||u.attributes){
+    h+=`<div class="sx"><span class="lbl">Abilities & attributes</span><div class="cxtags">`+
+      (u.abilities?u.abilities.split("|").map(a=>`<span class="cxtag ab">${esc(a)}</span>`).join(""):"")+
+      (u.attributes?u.attributes.split("|").map(a=>`<span class="cxtag at">${esc(a)}</span>`).join(""):"")+`</div></div>`;
+  }
+  if(u.strengths_weaknesses&&u.strengths_weaknesses.replace(/\|/g,"").trim())
+    h+=`<div class="sx"><span class="lbl">Strengths & weaknesses</span><div class="cxtags">`+
+      u.strengths_weaknesses.split("||").filter(s=>s.trim()).map(s=>`<span class="cxtag">${esc(s.trim())}</span>`).join("")+`</div></div>`;
+  h+=`<div class="sx"><span class="lbl">Raw data</span><button class="btn sm" id="cxAdv">Show</button><div id="cxAdvBox" style="display:none;margin-top:8px">`+
+    [["Key",u.unit_key],["Class key",u.class],["Weapon",u.melee_weapon],["Missile",u.missile_weapon],
+     ["Projectile",u.projectile],["Armour type",u.armour_key],["Shield type",u.shield_key],
+     ["Bonus v inf",u.weapon_bonus_v_infantry],["Bonus v cav",u.weapon_bonus_v_cavalry],
+     ["Entity",u.entity],["Ridden",u.vehicle_entity],["Speed from",u.speed_source],
+     ["Reload",u.reload],["Marksmanship",u.missile_marksmanship],["Walk speed",u.walk_speed],
+     ["Rank depth",u.rank_depth],["Spacing",u.spacing],["Tier",u.tier]]
+    .filter(p=>nz(p[1])!==null&&p[1]!=="").map(p=>`<div class="cxkv"><span>${p[0]}</span><span>${esc(p[1])}</span></div>`).join("")+`</div></div>`;
+  const sd=$("cxSide");sd.innerHTML=h;sd.classList.add("open");
+  const ab=sd.querySelector("#cxAdv");
+  ab.onclick=()=>{const b=sd.querySelector("#cxAdvBox");const on=b.style.display==="none";
+    b.style.display=on?"block":"none";ab.textContent=on?"Hide":"Show";};
+  document.querySelectorAll(".cxcard").forEach(c=>c.classList.toggle("sel",c.dataset.cxk===cxSel));
+}
+
+/* ---------- open / close ---------- */
+function openCodex(army){
+  cxInspect=null;cx.classList.remove("inspect");
+  cxArmy=army||null;cxSel=null;$("cxSide").classList.remove("open");
+  $("cxBuild").style.display=(army&&!army._plan)?"none":"";
+  cx.classList.toggle("muster",!!cxArmy);
+  cx.classList.add("open");$("bCodex").classList.add("on");
+  cxRender();
+}
+function closeCodex(){
+  cx.classList.remove("open");$("bCodex").classList.remove("on");
+  if(cxArmy){cxArmy=null;cx.classList.remove("muster");}
+  if(cxInspect){cxInspect=null;cx.classList.remove("inspect");}
+}
+window.openMuster=a=>{if(!gm){toast("GM mode required");return;}openCodex(a);};
+
+/* ============ Export .army_setup for Attila custom battle ============ */
+/* Injected INSIDE the codex closure so ensureXp/cxBy/cxInspect/cxArmy resolve. */
+/* Custom-battle faction keys, pinned to the mk_fact_* row (the one Attila's own
+   lobby wrote in .private_land_att.army_setup); the codex payload mixes mk2_. */
+const EXPORT_FACT={"Castile":"mk_fact_castile","León":"mk_fact_leon","Leon":"mk_fact_leon","Portugal":"mk_fact_portugal","Aragon":"mk_fact_aragon","Aragón":"mk_fact_aragon","Navarre":"mk_fact_navarre","Almohads":"mk_fact_almohads","Almohad":"mk_fact_almohads","Marinids":"mk_fact_marinids","Marinid":"mk_fact_marinids","Marinid Sultanate":"mk_fact_marinids","Trebizond":"mk_fact_trebizond","Trebizond Empire":"mk_fact_trebizond","England":"mk_fact_england","Kingdom of England":"mk_fact_england","Toulouse":"mk_fact_toulouse","County of Toulouse":"mk_fact_toulouse"};
+
+function buildArmySetup(a){
+  ensureXp(a);
+  const bytes=[];
+  const u8=v=>bytes.push(v&255);
+  const u16=v=>{u8(v);u8(v>>>8);};
+  const u32=v=>{u16(v&0xFFFF);u16((v>>>16)&0xFFFF);};
+  const s8=t=>{u16(t.length);for(let i=0;i<t.length;i++)u8(t.charCodeAt(i)&127);};
+  u32(11);u32(0);u32(0);
+  s8(EXPORT_FACT[a.faction]||"mk_fact_castile");
+  u8(1);u16(0);
+  u32(0);u8(1);u32(0);
+  // general first: the unit whose codex class is 'com', else the first unit
+  const idx=[...a.units.keys()];
+  let gi=idx.find(i=>{const u=cxBy[a.units[i]];return u&&u.class==="com";});
+  if(gi===undefined)gi=0;
+  idx.splice(idx.indexOf(gi),1);idx.unshift(gi);
+  u32(idx.length);
+  for(const i of idx){
+    s8(a.units[i]);
+    u32(Math.max(0,Math.min(9,(a.xp||[])[i]||0)));
+    u8(i===gi?1:0);u16(0);
+  }
+  for(let i=0;i<16;i++)u8(0);   // footer, all-zero in every sample
+  return new Uint8Array(bytes);
+}
+
+window.exportArmySetup=function(a){
+  if(!a||!Array.isArray(a.units)||!a.units.length){toast("Nothing mustered to export");return;}
+  if(!EXPORT_FACT[a.faction])
+    toast(a.faction+" has no Attila faction key — exporting under Castile");
+  const blob=new Blob([buildArmySetup(a)],{type:"application/octet-stream"});
+  const el=document.createElement("a");
+  el.href=URL.createObjectURL(blob);
+  el.download=((a.name||"host").replace(/[^\w\- ]+/g,"").trim()||"host")+".army_setup";
+  el.click();
+  setTimeout(()=>URL.revokeObjectURL(el.href),4000);
+  toast("Setup downloaded — drop it in Attila's army_setups folder, then load it in the custom battle lobby");
+};
+
+Faction 'Rohan' (29 files):
+  01_Eored_of_the_Kings_Mark_UC2png.png
+  01_Eorling_Swords_UCpng.png
+  01_Rohan_Men-at-Arms_UCpng.png
+  01_roh_eorling_riderspng.png
+  01_roh_horse_archerspng.png
+  01_roh_king_companypng.png
+  01_roh_retinue_house_eorlpng.png
+  01_roh_rohan_skirmisherspng.png
+  02_Eored_Eastfold_UCpng.png
+  02_Eored_Gap_UCpng.png
+  ... and 19 more
+
+Faction 'Woodland Realm' (21 files):
+  01_Forest_Archers_UCpng.png
+  01_Forest_Sentinels_UCpng.png
+  01_Forest_Spears_UCpng.png
+  01_Gate_Wardens_UCpng.png
+  01_wr_forest_riderspng.png
+  02_bow_lordspng.png
+  02_Legolas_UC1png.png
+  02_Silvan_Spears_UCpng.png
+  02_wr_forest_axespng.png
+  03_Gurthlagor_UCpng.png
+  ... and 11 more
+
+Faction 'Mordor' (20 files):
+  01_Gothmog_UC1png.png
+  01_imagepng.png
+  01_Mordor_Orc_Warband_UC1png.png
+  01_The_Nine_UCpng.png
+  02_Gothmog_UCpng.png
+  02_Morgul_Wolves_UCpng.png
+  02_Orc_Pillagers_UCpng.png
+  02_Orc_Spears_UC1png.png
+  06_Guards_of_the_Teeth_UCpng.png
+  06_mor_orc_rabblepng.png
+  ... and 10 more
+
+Faction 'Lothlorien' (14 files):
+  01_Galadhron_Archers_UCpng.png
+  01_Lorien_Outriders_UCpng.png
+  01_Lorien_Sword_Company_UCpng.png
+  01_Nimrodel_patrollers_UCpng.png
+  02_Galadhrim_Spear_warriors_UCpng.png
+  02_Haldir_UCpng.png
+  02_Lorien_Spear_Company_UC1png.png
+  03_Amroth_Sentinels_UCpng.png
+  03_Heroes_of_Amon_Lanc_UCpng.png
+  03_Naith_Infantry_UCpng.png
+  ... and 4 more
+
+Faction 'Imraldris' (7 files):
+  02_Heavy_Elven_swords_UCpng.png
+  03_Heavy_Elven_archers_UCpng.png
+  05_Imladris_lancers_UCpng.png
+  06_Guards_of_Imladris_UCpng.png
+  06_Imladris_Pikes_UCpng.png
+  08_Elrond_UC1png.png
+  08_Imladris_Horse-archerspng.png
+
+Faction 'Lostladen Tribes' (29 files):
+  01_Corsair_Marines_UC2png.png
+  01_Haradrim_Camels_UCpng.png
+  01_har_desert_trackerpng.png
+  01_Mahud_spearmen_UCpng.png
+  01_Umbar_guardspng.png
+  02_Black_Serpent_Rangers_UCpng.png
+  02_Corsair_Archers_UCpng.png
+  02_Firespitter_UCpng.png
+  02_haradrim_Glaives_UCpng.png
+  02_Mahud_clubmen_UCpng.png
+  ... and 19 more
