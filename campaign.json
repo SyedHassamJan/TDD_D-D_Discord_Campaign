@@ -127,7 +127,8 @@
         "Huesca",
         "Lleida",
         "Pamplona",
-        "~Italy"
+        "~Italy",
+        "Ada"
       ],
       "siege": null,
       "elev": 909,
@@ -2006,6 +2007,31 @@
       ],
       "siege": null,
       "elev": 1841,
+      "bld": [],
+      "upg": null,
+      "raid": null,
+      "occ": null
+    },
+    {
+      "id": "Ada",
+      "modern": "Ada",
+      "hex": "#69edbc",
+      "playable": true,
+      "cx": 2045.0,
+      "cy": 260.0,
+      "px": 14250,
+      "coastal": false,
+      "tier": 2,
+      "terrain": "plains",
+      "value": 1000,
+      "move": 3,
+      "garrison": 400,
+      "owner": "Gondor",
+      "adj": [
+        "~France"
+      ],
+      "siege": null,
+      "elev": 250,
       "bld": [],
       "upg": null,
       "raid": null,
