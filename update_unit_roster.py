@@ -1,12 +1,16 @@
-"""Build the campaign roster from the hand-authored unit.md source of truth."""
+"""Build the campaign roster from the Dawnless Days CSV source of truth."""
 from __future__ import annotations
 
+import csv
 import json
+import os
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).parent
-SOURCE = ROOT / "unit.md"
+SOURCE = Path(os.environ.get("DAWNLESS_DAYS_CSV", ROOT / "dawnless_days.csv"))
+if not SOURCE.exists():
+    SOURCE = Path(r"D:\downlaods\dawnless_days.csv")
 PAGES = [ROOT / "gm.html", ROOT / "index.html"]
 
 # The map uses these display names/ids.  Keeping them canonical means a roster
@@ -40,7 +44,7 @@ def key_for(faction: str, name: str, seen: set[str]) -> str:
     return key
 
 
-def unit_shape(name: str, tier: int, cost: int) -> dict:
+def unit_shape(name: str, tier: int, cost: float) -> dict:
     low = name.lower()
     artillery = any(x in low for x in ("onager", "trebuchet", "ballista", "scorpio"))
     hero = tier == 4 and any(x in low for x in ("king", "prince", "lord", "sauron", "nazgul", "witch", "theoden", "eomer", "boromir", "balin", "gimli", "gloin", "dain", "imrahil", "khamul", "arbelzagar", "vinelord", "erkenbrand", "winfried", "theodred", "khahar", "khavar", "tuff"))
@@ -73,36 +77,36 @@ def unit_shape(name: str, tier: int, cost: int) -> dict:
 
 
 def parse_roster() -> tuple[list[dict], list[str]]:
-    faction = None
     seen: set[str] = set()
     units: list[dict] = []
     factions: list[str] = []
-    for raw in SOURCE.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if not line or line == "-" or re.match(r"^\w+\s+[—-]\s+\d", line):
-            continue
-        header = re.fullmatch(r"(.+?):", line)
-        if header:
-            faction = FACTION_NAMES.get(header.group(1).strip().lower(), header.group(1).strip())
+    with SOURCE.open(encoding="utf-8-sig", newline="") as source:
+        for row in csv.DictReader(source):
+            raw_faction = (row.get("Faction") or "").strip()
+            name = (row.get("Unit") or "").strip()
+            if not raw_faction or not name:
+                continue
+            faction = FACTION_NAMES.get(raw_faction.lower(), raw_faction)
             if faction not in factions:
                 factions.append(faction)
-            continue
-        if not faction:
-            continue
-        match = re.search(r"(?:^|-)\s*(\d{3,4})(?:\D.*)?$", line)
-        if not match:
-            continue
-        cost = int(match.group(1))
-        name = line[:match.start()].strip().rstrip("- ").strip()
-        tier_match = re.match(r"T([1-4])\s*-\s*(.*)$", name, re.I)
-        tier, name = (int(tier_match.group(1)), tier_match.group(2).strip()) if tier_match else (4, name)
-        name = re.sub(r"\s*\(edited\)\s*", "", name, flags=re.I).strip()
-        # Some pasted chat text follows a roster; it is not a unit entry.
-        if not name or "—" in name:
-            continue
-        shape = unit_shape(name, tier, cost)
-        units.append({"faction": faction, "unit_key": key_for(faction, name, seen), "name": name,
-                      "tier": str(tier), "cost": cost, **shape})
+            status = (row.get("Status") or "").strip()
+            if status:
+                name = f"({status})-{name}"
+            tier = int((row.get("Tier") or "T4").strip().removeprefix("T"))
+            cost_text = (row.get("Cost") or "").strip()
+            upkeep_text = (row.get("Upkeep") or "").strip()
+            # The source contains one Rhurrim mercenary row without a price.
+            # Do not create a free unit when no authoritative value is supplied.
+            if not cost_text or not upkeep_text:
+                continue
+            cost = float(cost_text)
+            upkeep = float(upkeep_text)
+            if cost.is_integer():
+                cost = int(cost)
+            shape = unit_shape(name, tier, cost)
+            shape["upkeep"] = upkeep
+            units.append({"faction": faction, "unit_key": key_for(faction, name, seen), "name": name,
+                          "tier": str(tier), "cost": cost, **shape})
     return units, factions
 
 
@@ -117,35 +121,13 @@ def replace_block(text: str, block_id: str, value: object) -> str:
 
 def main() -> None:
     units, faction_names = parse_roster()
-    if len(units) < 300:
+    if len(units) < 500:
         raise RuntimeError(f"Parsed only {len(units)} units; refusing to replace roster")
     codex = {"cap": 20, "factions": [{"name": name} for name in faction_names], "units": units}
-
-    campaign_path = ROOT / "campaign.json"
-    campaign = json.loads(campaign_path.read_text(encoding="utf-8"))
-    campaign.update({"turn": 1, "year": 1418, "season": "Spring", "active": 0, "moved": [], "turnlog": []})
-    # Southern Ithilien's works were test fixtures, not part of the campaign start.
-    for province in campaign.get("provinces", []):
-        if province.get("id") == "South Ithilien":
-            province["bld"] = []
-            province.pop("bldOwner", None)
-            province.pop("availableBld", None)
-            province.pop("availableBldOwner", None)
-            province.pop("buildQueue", None)
-            province["upg"] = None
-            break
-    known = {f["id"] for f in campaign.get("factions", [])}
-    for i, name in enumerate(faction_names):
-        if name not in known:
-            campaign["factions"].append({"id": name, "name": name, "color": PALETTE[i % len(PALETTE)],
-                                         "treasury": 5000, "capital": "", "zeal": 6})
-    campaign["order"] = [f["id"] for f in campaign["factions"]]
-    campaign_path.write_text(json.dumps(campaign, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     for page in PAGES:
         text = page.read_text(encoding="utf-8")
         text = replace_block(text, "codexdata", codex)
-        text = replace_block(text, "mapdata", campaign)
         page.write_text(text, encoding="utf-8")
     print(f"Installed {len(units)} units across {len(faction_names)} factions.")
 
