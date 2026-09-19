@@ -2589,6 +2589,18 @@ function canServe(u,fid){
   const realm=REALM_OF[fid]||fid;
   return !realm||u.faction===realm;
 }
+function unitTier(u){
+  const tagged=String((u&&u.unit_key)||"").match(/(?:^|_)t([1-4])(?:_|$)/i)||String((u&&u.name)||"").match(/\bT([1-4])\b/i);
+  return tagged?+tagged:Math.max(1,Math.min(4,Number(u&&u.tier)||1));
+}
+const barracksLevel=p=>(p&&p.bld||[]).includes("barracks")?Math.max(1,Number((p.bldLevel||{}).barracks)||1):0;
+function recruitmentBarracksLevel(a){
+  const fid=a&&a.faction;
+  const at=a&&a.at&&P[a.at]?P[a.at]
+    :(sel&&P[sel]&&P[sel].owner===fid?P[sel]
+      :((F[fid]&&P[F[fid].capital])||S.provinces.find(p=>p.owner===fid)));
+  return barracksLevel(at);
+}
 S.armies.forEach(a=>{a.units??=null;});syncAll();
 
 /* ---------- state ---------- */
@@ -2602,6 +2614,7 @@ function cxList(){
     if(cxInspect){if((cxInspect.units||[]).indexOf(u.unit_key)===-1)return false;}
     else{
       if(cxArmy&&!canServe(u,cxArmy.faction))return false;
+      if(cxArmy&&!cxArmy.holy&&unitTier(u)>recruitmentBarracksLevel(cxArmy))return false;
       if(!cxArmy&&cxRealm&&u.faction!==(REALM_OF[cxRealm]||cxRealm))return false;
     }
     if(cxCls&&u.class!==cxCls)return false;
@@ -2682,9 +2695,10 @@ function cxFoot(){
     ? `<b>${n}</b>/${CAPU} units &nbsp; <b>${cxArmy.men.toLocaleString()}</b> men &nbsp; <span style="color:var(--brass)">sworn to the holy war &mdash; no cost, no upkeep</span>`
     : `<b>${n}</b>/${CAPU} units &nbsp; <b>${cxArmy.men.toLocaleString()}</b> men &nbsp; <b>${cost.toLocaleString()}</b>g raise &nbsp; <span style="color:${leftColor}">(<b>${goldLeft.toLocaleString()}</b>g left of ${goldHeld.toLocaleString()}g)</span> &nbsp; <b>${upk.toLocaleString()}</b>g/turn`;
   const em=EMBLEMS[cxArmy.faction];
+  const barracks=recruitmentBarracksLevel(cxArmy);
   $("cxMusterTag").innerHTML=(em?`<img src="${em}">`:"")+
     (cxArmy._plan?`Planning for ${esc(cxArmy.faction)} — copy it to your GM when done`
-                 :`Mustering: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)}`);
+                 :`Mustering: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · ${barracks?`Barracks ${barracks} (Tiers 1–${barracks})`:"No Barracks — construct Barracks I first"}`);
   $("cxDone").textContent=cxArmy._plan?"Close plan":"Done mustering";
 }
 
@@ -3135,6 +3149,11 @@ cx.addEventListener("click",e=>{
     if(!cxArmy||(!gm&&!cxArmy._plan))return;
     if(cxArmy.units.length>=CAPU){toast("An army may field only "+CAPU+" units");return;}
     const uu=cxBy[ad.dataset.cxad],ff=F[cxArmy.faction];
+    const level=recruitmentBarracksLevel(cxArmy);
+    if(!cxArmy.holy&&unitTier(uu)>level){
+      toast(level?`Barracks ${level} can recruit only Tiers 1–${level}.`:"No Barracks — construct Barracks I first.");
+      return;
+    }
     const ucost=uu?(uu.cost||0):0;
     if(!cxArmy.holy){
       const currTotal=cxArmy.units.reduce((s,k)=>s+((cxBy[k]||{}).cost||0),0);
