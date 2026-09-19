@@ -33,6 +33,47 @@ PALETTE = ["#7A5C2E", "#2E7D32", "#C5A059", "#7C3030", "#6D5A7B", "#904A28",
            "#A46F35", "#4682B4", "#3E5B31", "#607D3B", "#388E3C", "#67839A",
            "#899B8D", "#BB8B2C", "#795548", "#9C27B0", "#4A154B", "#4E86B8"]
 
+# The campaign has spun these regional hosts out of their former umbrella
+# factions.  The source CSV remains authoritative for their values; this only
+# decides which in-game banner recruits each named unit.
+ROSTER_REALMS = {
+    "(aor)-balcoth nobles": "Balcoth",
+    "(aor)-balcoth raiders": "Balcoth",
+    "(aor)-balcoth spears": "Balcoth",
+    "(aor)-haerrim infantry": "Haerrim",
+    "(aor)-haerrim outriders": "Haerrim",
+    "(aor)-feredrim rangers": "Feredrim",
+    "(aor)-feredrim woodsmen": "Feredrim",
+    "(aor)-carrock wardens": "Beorings",
+    "(aor)-pass sentries": "Beorings",
+    "(aor)-beoring warroirs": "Beorings",
+    "(aor)-eotheod footmen": "Eotheod",
+    "(aor)-eotheod cavalry": "Eotheod",
+    "(aor)-eotheod nobles": "Eotheod",
+    "(aor)-eotheod lancers": "Eotheod",
+    "(aor)-eotheod horse archers": "Eotheod",
+    "(aor)-eotheod outriders": "Eotheod",
+    "(aor)-woodland axemen": "GreenWood",
+    "(aor)-greenwood rangers": "GreenWood",
+    "(aor)-stoor shirrifs": "GreenWood",
+    "(aor)-warlord's pillagers": "Drudain",
+    "(aor)-warlord's champions": "Drudain",
+    "(aor)-warlord's crossbows": "Drudain",
+    "(aor)-warlord cavalry": "Drudain",
+    "(mercs)-orthanc servants": "Northern Endwaith",
+    "elder spears": "Southern Endwaith",
+    "elder riders": "Southern Endwaith",
+}
+
+# This requested name is not present in Dawnless Days.  Its standard Tier 2
+# missile-infantry price/upkeep mirrors the nearest existing woodland troop.
+CUSTOM_UNITS = [
+    {"faction": "GreenWood", "name": "GreenWood Foresters", "tier": 2,
+     "cost": 925, "upkeep": 462.5, "class": "inf_mis",
+     "class_name": "Missile Infantry", "category": "infantry",
+     "category_name": "Infantry", "men": 120, "missile": True, "mounted": False},
+]
+
 
 def key_for(faction: str, name: str, seen: set[str]) -> str:
     base = re.sub(r"[^a-z0-9]+", "_", f"{faction}_{name}".lower()).strip("_")
@@ -78,6 +119,7 @@ def unit_shape(name: str, tier: int, cost: float) -> dict:
 
 def parse_roster() -> tuple[list[dict], list[str]]:
     seen: set[str] = set()
+    relocated_seen: set[tuple[str, str]] = set()
     units: list[dict] = []
     factions: list[str] = []
     with SOURCE.open(encoding="utf-8-sig", newline="") as source:
@@ -86,12 +128,20 @@ def parse_roster() -> tuple[list[dict], list[str]]:
             name = (row.get("Unit") or "").strip()
             if not raw_faction or not name:
                 continue
-            faction = FACTION_NAMES.get(raw_faction.lower(), raw_faction)
-            if faction not in factions:
-                factions.append(faction)
             status = (row.get("Status") or "").strip()
             if status:
                 name = f"({status})-{name}"
+            relocated_faction = ROSTER_REALMS.get(name.lower())
+            faction = relocated_faction or FACTION_NAMES.get(raw_faction.lower(), raw_faction)
+            # A few CSV entries exist under more than one old umbrella realm.
+            # Their new regional roster needs one card per requested unit.
+            relocated_key = (faction, name.casefold())
+            if relocated_faction and relocated_key in relocated_seen:
+                continue
+            if relocated_faction:
+                relocated_seen.add(relocated_key)
+            if faction not in factions:
+                factions.append(faction)
             tier = int((row.get("Tier") or "T4").strip().removeprefix("T"))
             cost_text = (row.get("Cost") or "").strip()
             upkeep_text = (row.get("Upkeep") or "").strip()
@@ -107,6 +157,16 @@ def parse_roster() -> tuple[list[dict], list[str]]:
             shape["upkeep"] = upkeep
             units.append({"faction": faction, "unit_key": key_for(faction, name, seen), "name": name,
                           "tier": str(tier), "cost": cost, **shape})
+    for unit in CUSTOM_UNITS:
+        faction = unit["faction"]
+        if faction not in factions:
+            factions.append(faction)
+        units.append({"faction": faction, "unit_key": key_for(faction, unit["name"], seen),
+                      "name": unit["name"], "tier": str(unit["tier"]), "cost": unit["cost"],
+                      "upkeep": unit["upkeep"], "class": unit["class"],
+                      "class_name": unit["class_name"], "category": unit["category"],
+                      "category_name": unit["category_name"], "men": unit["men"],
+                      "missile": unit["missile"], "mounted": unit["mounted"]})
     return units, factions
 
 

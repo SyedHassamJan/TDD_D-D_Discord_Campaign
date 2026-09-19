@@ -254,6 +254,78 @@
       "treasury": 5000,
       "capital": "",
       "zeal": 6
+    },
+    {
+      "id": "Balcoth",
+      "name": "Balcoth",
+      "color": "#6E1E24",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Haerrim",
+      "name": "Haerrim",
+      "color": "#B65A2A",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Feredrim",
+      "name": "Feredrim",
+      "color": "#4F7A4E",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Beorings",
+      "name": "Beorings",
+      "color": "#8A6A2E",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Eotheod",
+      "name": "Eotheod",
+      "color": "#5A8FC8",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "GreenWood",
+      "name": "GreenWood",
+      "color": "#246B47",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Drudain",
+      "name": "Drudain",
+      "color": "#71412F",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Northern Endwaith",
+      "name": "Northern Endwaith",
+      "color": "#4C5963",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
+    },
+    {
+      "id": "Southern Endwaith",
+      "name": "Southern Endwaith",
+      "color": "#8B6B3C",
+      "treasury": 5000,
+      "capital": "",
+      "zeal": 6
     }
   ],
   "provinces": [
@@ -1139,9 +1211,6 @@
         "Province_359",
         "Province_370",
         "Province_371",
-        "Province_413",
-        "Province_433",
-        "Province_446",
         "Province_460",
         "Province_72"
       ]
@@ -1398,6 +1467,7 @@
       "garrison": 1500,
       "bld": [],
       "adj": [
+        "Osgiliath",
         "Province_208",
         "Province_260",
         "Province_295",
@@ -1407,7 +1477,6 @@
         "Province_351",
         "Province_359",
         "Province_371",
-        "Province_379",
         "Province_413",
         "Province_5",
         "Province_72"
@@ -1951,6 +2020,7 @@
       "bld": [],
       "adj": [
         "Harondor",
+        "Osgiliath",
         "Province_103",
         "Province_12",
         "Province_13",
@@ -2254,10 +2324,10 @@
       "garrison": 1500,
       "bld": [],
       "adj": [
+        "Osgiliath",
         "Province_197",
         "Province_359",
         "Province_371",
-        "Province_379",
         "Province_395",
         "Province_417"
       ]
@@ -4334,6 +4404,7 @@
       "garrison": 1500,
       "bld": [],
       "adj": [
+        "Osgiliath",
         "Province_260",
         "Province_296",
         "Province_305",
@@ -4341,7 +4412,6 @@
         "Province_334",
         "Province_351",
         "Province_359",
-        "Province_379",
         "Province_412",
         "Province_440",
         "Province_446",
@@ -5088,6 +5158,39 @@
         "Province_421",
         "Province_450"
       ]
+    },
+    {
+      "id": "Osgiliath",
+      "modern": "Osgiliath",
+      "hex": "#e91e63",
+      "playable": true,
+      "owner": "",
+      "tier": 2,
+      "terrain": "plains",
+      "value": 1000,
+      "move": 2,
+      "garrison": 1500,
+      "bld": [],
+      "adj": [
+        "Province_371",
+        "Province_413",
+        "Province_433",
+        "Province_446"
+      ]
+    },
+    {
+      "id": "Province_390_split_1",
+      "modern": "Province 390 — separated tile 1",
+      "hex": "#00796b",
+      "playable": true,
+      "owner": "",
+      "tier": 2,
+      "terrain": "plains",
+      "value": 1000,
+      "move": 2,
+      "garrison": 1500,
+      "bld": [],
+      "adj": []
     }
   ],
   "armies": [
@@ -5161,20 +5264,27 @@
   ],
   "order": [
     "Anduin Vale",
+    "Balcoth",
+    "Beorings",
     "Dale",
     "Dol Amroth",
     "Dol Gul Dur",
     "DolGulDur",
     "Dorvinion",
     "Dorwinion",
+    "Drudain",
     "Dunland",
     "Dunlendings",
+    "Eotheod",
     "Erebor",
     "Ered Luin",
     "Ered Mithrin",
+    "Feredrim",
     "Goblins",
     "Gondor",
+    "GreenWood",
     "Gundabad",
+    "Haerrim",
     "Imraldris",
     "Iron Hills",
     "Isengard",
@@ -5185,10 +5295,12 @@
     "Lothlorien",
     "Mahud",
     "Mordor",
+    "Northern Endwaith",
     "Rachrohir",
     "Rhudaur",
     "Rhurrim",
     "Rohan",
+    "Southern Endwaith",
     "Umbar",
     "Woodland Realm"
   ],
