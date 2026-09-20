@@ -253,9 +253,13 @@ input[type=file]{display:none}
 #cxMusterTag img{width:18px;height:18px;border-radius:50%}
 #cxHead input[type=text]{background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 10px;font-size:13px;width:220px}
 #cxHead input[type=text]:focus{outline:none;border-color:var(--brass)}
-#cxHead select{background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 8px;font-size:12px}
+#cxHead select{width:auto;background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 8px;font-size:12px}
 #cxRealms{display:flex;gap:4px;flex-wrap:wrap}
 #codex.muster #cxRealms{display:none}
+#cxFactionWrap{display:none;align-items:center;gap:6px;color:var(--dim);font-family:"Archivo Narrow";font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+#codex.muster #cxFactionWrap{display:flex}
+#codex.inspect #cxFactionWrap{display:none}
+#cxFaction{min-width:170px}
 #cxCount{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim);margin-left:auto;white-space:nowrap}
 #cxClose{background:none;border:1px solid var(--line);border-radius:3px;color:var(--dim);width:30px;height:30px;cursor:pointer;font-size:15px}
 #cxClose:hover{color:var(--bone);border-color:var(--dim)}
@@ -1890,7 +1894,7 @@ function renderWorksBox(p){
     const toLevel=+b.dataset.barrUp,cost=BARRACKS_UPGRADE_COST[toLevel];snap("upgrade barracks");
     if(!pay(cost,p.owner)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
     p.buildQueue=p.buildQueue||[];p.buildQueue.push({key:"barracks",kind:"barracksUpgrade",toLevel,payer:p.owner,cost,startedTurn:S.turn,startedDate:`${S.season} ${S.year}`});
-    logIt(`${p.owner} starts upgrading Barracks at ${p.id} to Level ${toLevel} (${cost.toLocaleString()} florins)`);persistCampaign();openProv(p);
+    logIt(`${p.owner} starts upgrading Barracks at ${p.id} to Level ${toLevel} (${cost.toLocaleString()} florins)`);persistCampaign();legend();drawLedger();openProv(p);
   });
   box.querySelectorAll("[data-trade-up]").forEach(b=>b.onclick=()=>{
     const key=b.dataset.tradeUp,toLevel=+b.dataset.tradeLevel,trade=TRADE_BUILDINGS[key],cost=trade&&trade.l[toLevel-1][0];
@@ -1898,7 +1902,7 @@ function renderWorksBox(p){
     snap("upgrade "+trade.n);
     if(!pay(cost,p.owner)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
     p.buildQueue=p.buildQueue||[];p.buildQueue.push({key,kind:"tradeUpgrade",toLevel,payer:p.owner,cost,startedTurn:S.turn,startedDate:`${S.season} ${S.year}`});
-    logIt(`${p.owner} starts upgrading ${trade.n} at ${p.id} to Level ${toLevel} (${cost.toLocaleString()} florins)`);persistCampaign();openProv(p);
+    logIt(`${p.owner} starts upgrading ${trade.n} at ${p.id} to Level ${toLevel} (${cost.toLocaleString()} florins)`);persistCampaign();legend();drawLedger();openProv(p);
   });
   box.querySelectorAll("[data-buassign]").forEach(b=>b.onclick=()=>{
     const key=b.dataset.buassign;snap("remove available building");
@@ -2730,7 +2734,7 @@ function turnSnapshot(label){
 <div id="codex">
   <div id="cxHead">
     <h2>CODEX</h2>
-    <span id="cxMusterTag"></span><button class="btn" id="cxExport" title="Download this host as an Attila .army_setup file — drop it in %APPDATA%\The Creative Assembly\Attila\army_setups\ and load it in the custom battle lobby">⬇ Attila setup</button>
+    <span id="cxMusterTag"></span><label id="cxFactionWrap">Faction <select id="cxFaction" aria-label="Roster faction filter"><option value="">All factions</option></select></label><button class="btn" id="cxExport" title="Download this host as an Attila .army_setup file — drop it in %APPDATA%\The Creative Assembly\Attila\army_setups\ and load it in the custom battle lobby">⬇ Attila setup</button>
     <input type="text" id="cxQ" placeholder="search units… " autocomplete="off">
     <span id="cxRealms"></span>
     <select id="cxCls"><option value="">All classes</option></select>
@@ -2817,7 +2821,7 @@ function recruitmentBarracksLevel(a){return a&&a.at&&P[a.at]?barracksLevel(P[a.a
 S.armies.forEach(a=>{a.units??=null;});syncAll();
 
 /* ---------- state ---------- */
-let cxRealm="",cxQ="",cxCls="",cxSort="tier",cxArmy=null,cxSel=null,cxInspect=null;
+let cxRealm="",cxFaction="",cxQ="",cxCls="",cxSort="tier",cxArmy=null,cxSel=null,cxInspect=null;
 const cx=$("codex");
 
 /* ---------- filtering ---------- */
@@ -2830,6 +2834,7 @@ function cxList(){
       // Player plans remain limited to their realm and local Barracks tier.
       if(!gm&&cxArmy&&!canServe(u,cxArmy.faction))return false;
       if(!gm&&cxArmy&&!cxArmy.holy&&unitTier(u)>recruitmentBarracksLevel(cxArmy))return false;
+      if(gm&&cxFaction&&u.faction!==cxFaction)return false;
       if(!cxArmy&&cxRealm&&u.faction!==(REALM_OF[cxRealm]||cxRealm))return false;
     }
     if(cxCls&&u.class!==cxCls)return false;
@@ -2913,7 +2918,7 @@ function cxFoot(){
   const barracks=recruitmentBarracksLevel(cxArmy);
   $("cxMusterTag").innerHTML=(em?`<img src="${em}">`:"")+
     (cxArmy._plan?`Planning for ${esc(cxArmy.faction)} — copy it to your GM when done`
-                 :gm?`GM override: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · all factions and Tiers 1–4 available`
+                 :gm?`GM override: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · faction filter · all Tiers 1–4 available`
                     :`Mustering: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · ${barracks?`Barracks ${barracks} (Tiers 1–${barracks})`:"No Barracks — construct Barracks I first"}`);
   $("cxDone").textContent=cxArmy._plan?"Close plan":"Done mustering";
 }
@@ -2977,6 +2982,10 @@ function cxDetail(k){
 function openCodex(army){
   cxInspect=null;cx.classList.remove("inspect");
   cxArmy=army||null;cxSel=null;$("cxSide").classList.remove("open");
+  // Start GM mustering with the host's own faction selected. The dropdown can
+  // then deliberately switch to another realm or to All factions for events.
+  cxFaction=gm&&cxArmy?(REALM_OF[cxArmy.faction]||cxArmy.faction):"";
+  $("cxFaction").value=cxFaction;
   if(cxArmy&&Array.isArray(cxArmy.units)&&!cxArmy._plan){
     cxArmy._startCost=cxArmy.units.reduce((s,k)=>s+((cxBy[k]||{}).cost||0),0);
   }
@@ -3348,7 +3357,9 @@ $("cxRealms").innerHTML=`<button class="cxchip on" data-r="">All</button>`+
   CX.factions.map(f=>{const fid=REALM_FAC[f.name];const em=(fid&&EMBLEMS[fid])||(window.CODEX_FLAGS||{})[f.name];
     return `<button class="cxchip" data-r="${esc(f.name)}" title="${esc(f.name)}">${em?`<img src="${em}">`:""}${esc(fid||f.name)}</button>`;}).join("");
 CX_CLASSES.forEach(c=>{const o=document.createElement("option");o.value=c[0];o.textContent=c[1];$("cxCls").appendChild(o);});
+CX.factions.forEach(f=>{const name=typeof f==="string"?f:f.name;const o=document.createElement("option");o.value=name;o.textContent=name;$("cxFaction").appendChild(o);});
 $("cxQ").oninput=function(){cxQ=this.value;cxRender();};
+$("cxFaction").onchange=function(){cxFaction=this.value;cxRender();};
 $("cxCls").onchange=function(){cxCls=this.value;cxRender();};
 $("cxSort").onchange=function(){cxSort=this.value;cxRender();};
 cx.addEventListener("click",e=>{
