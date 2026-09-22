@@ -1,0 +1,8 @@
+# Temporary and downloaded files
+*.xlsx
+*([0-9]*)*
+image.png
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

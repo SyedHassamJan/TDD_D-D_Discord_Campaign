@@ -1,6 +1,4 @@
 "use strict";
-
-// Source: buildings.xlsx — Trade category.  Each entry is indexed by level
 // (1–5) and stores [construction cost, seasonal revenue].
 const TRADE_BUILDINGS={
   gold_mine:{n:"Gold Mine",l:[[750,50],[1250,100],[2000,175],[3000,275],[4500,400]]},
