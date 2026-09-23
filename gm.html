@@ -2608,23 +2608,13 @@ $("bSave").onclick=()=>{
 /* ---------- one-button publish to GitHub ---------- */
 function b64u(t){return btoa(unescape(encodeURIComponent(t)));}
 function ghTarget(){
-  let s="crokator0012-commits/ZeCampain";
-  try{
-    const sv=localStorage.getItem("rqRepo");
-    if(sv&&sv.trim()&&!sv.includes("SyedHassamJan")) s=sv.trim();
-  }catch(e){}
-  s=s.replace(/^https?:\/\/github\.com\//i,"").replace(/\.git$/i,"").replace(/^\/+|\/+$/g,"");
-  const parts=s.split("/");
-  if(parts.length>=2&&parts[0]&&parts[1]){
-    return {o:parts[0], r:parts[1]};
-  }
   return {o:"crokator0012-commits", r:"ZeCampain"};
 }
 async function publishTurn(){
-  const tgt=ghTarget();if(!tgt){toast("Publish cancelled");return;}
+  const tgt=ghTarget();
   let tok=null;try{tok=localStorage.getItem("rqTok");}catch(e){}
   if(!tok){
-    tok=prompt("Paste your GitHub access token (one-time — see the GM guide, 'Token'):");
+    tok=prompt("Paste your GitHub access token:");
     if(!tok)return;tok=tok.trim();
     try{localStorage.setItem("rqTok",tok);}catch(e){}
   }
@@ -2634,16 +2624,23 @@ async function publishTurn(){
   try{
     let sha=null;
     const g=await fetch(api,{headers:H});
-    if(g.status===200)sha=(await g.json()).sha;
-    else if(g.status===401||g.status===403){try{localStorage.removeItem("rqTok");}catch(e){}toast("Token rejected — press Publish and paste it again");return;}
+    if(g.status===200){
+      sha=(await g.json()).sha;
+    }else if(g.status===401||g.status===403||g.status===404){
+      try{localStorage.removeItem("rqTok");localStorage.removeItem("rqRepo");}catch(e){}
+      toast("Token rejected ("+g.status+") — token cleared, click Publish again to re-enter");
+      return;
+    }
     const body={message:`Turn ${S.turn} — ${S.season} ${S.year}`,content:b64u(JSON.stringify(S,null,1))};
     if(sha)body.sha=sha;
     const p=await fetch(api,{method:"PUT",headers:{...H,"Content-Type":"application/json"},body:JSON.stringify(body)});
-    if(p.ok){$("bPub").classList.remove("on");toast("Published — live for the players in about a minute");}
-    else if(p.status===401||p.status===403){try{localStorage.removeItem("rqTok");}catch(e){}toast("Token rejected — press Publish and paste it again");}
-    else if(p.status===404){try{localStorage.removeItem("rqRepo");}catch(e){}toast("Repository not found — check the token has access to it");}
-    else if(p.status===409){toast("Conflict — press Publish once more");}
-    else toast("Publish failed ("+p.status+")");
+    if(p.ok){
+      $("bPub").classList.remove("on");
+      toast("Published — live for the players in about a minute");
+    }else{
+      try{localStorage.removeItem("rqTok");localStorage.removeItem("rqRepo");}catch(e){}
+      toast("Publish failed ("+p.status+") — token cleared, please try again");
+    }
   }catch(e){toast("No connection — publish failed");}
   finally{$("bPub").disabled=false;$("bPub").textContent="⇧ Publish";}
 }
