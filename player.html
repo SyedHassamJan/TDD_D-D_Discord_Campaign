@@ -200,9 +200,9 @@ textarea{resize:vertical;min-height:60px;font-size:12px;line-height:1.5}
 .chip{background:#141E26;border:1px solid var(--soft);border-radius:99px;padding:1px 8px;cursor:pointer;font-size:10px;color:var(--dimmer)}
 .chip:hover{border-color:var(--brass);color:var(--bone)}
 .batcard .s{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim);margin-bottom:8px}
-#help,#gmask,#cxShare,#batM,#rulesOv,#tmapOv{position:fixed;inset:0;z-index:50;background:rgba(6,10,14,.8);backdrop-filter:blur(5px);
+#help,#cxShare,#batM,#rulesOv,#tmapOv{position:fixed;inset:0;z-index:50;background:rgba(6,10,14,.8);backdrop-filter:blur(5px);
  display:none;align-items:center;justify-content:center}
-#help.open,#gmask.open,#cxShare.open,#batM.open,#rulesOv.open,#tmapOv.open{display:flex}
+#help.open,#cxShare.open,#batM.open,#rulesOv.open,#tmapOv.open{display:flex}
 .hcard{background:rgba(15,22,28,.99);border:1px solid var(--line);border-radius:6px;padding:26px 30px;width:520px;max-width:92vw}
 .hcard h2{margin:0 0 14px;font-family:"Cinzel",serif;font-size:20px;font-weight:600}
 .hgrid{display:grid;grid-template-columns:130px 1fr;gap:7px 14px;font-size:13px}
@@ -231,8 +231,6 @@ textarea{resize:vertical;min-height:60px;font-size:12px;line-height:1.5}
  border:1px solid var(--brass);border-radius:4px;padding:9px 16px;font-size:13px;display:none}
 input[type=file]{display:none}
 .readonly .gm{display:none!important}
-.player-view{display:none}
-.readonly .player-view{display:flex}
 
 /* ================= CODEX ================= */
 #codexTab{display:flex;padding:4px;gap:3px;margin-left:auto}
@@ -253,13 +251,9 @@ input[type=file]{display:none}
 #cxMusterTag img{width:18px;height:18px;border-radius:50%}
 #cxHead input[type=text]{background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 10px;font-size:13px;width:220px}
 #cxHead input[type=text]:focus{outline:none;border-color:var(--brass)}
-#cxHead select{width:auto;background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 8px;font-size:12px}
+#cxHead select{background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 8px;font-size:12px}
 #cxRealms{display:flex;gap:4px;flex-wrap:wrap}
 #codex.muster #cxRealms{display:none}
-#cxFactionWrap{display:none;align-items:center;gap:6px;color:var(--dim);font-family:"Archivo Narrow";font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-#codex.muster #cxFactionWrap{display:flex}
-#codex.inspect #cxFactionWrap{display:none}
-#cxFaction{min-width:170px}
 #cxCount{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim);margin-left:auto;white-space:nowrap}
 #cxClose{background:none;border:1px solid var(--line);border-radius:3px;color:var(--dim);width:30px;height:30px;cursor:pointer;font-size:15px}
 #cxClose:hover{color:var(--bone);border-color:var(--dim)}
@@ -385,9 +379,8 @@ input[type=file]{display:none}
     <div class="stat"><div class="k">Turn</div><div class="v" id="sTurn">1</div></div>
   <div class="stat"><div class="k">Date</div><div class="v" id="sDate">Spring 1200</div></div>
   <div class="stat"><div class="k">Acting</div><div class="v" id="sAct" style="display:flex;align-items:center;gap:6px">—</div></div>
-  <div class="stat player-view"><div class="k">Viewing as</div><select id="playerFaction" class="v" style="background:transparent;border:0;max-width:130px"></select></div>
   <div class="acts">
-    <button class="btn primary gm" id="bTurn">Next realm ▸</button><button class="btn gm" id="bClock" title="Set the current campaign turn">Set turn</button><button class="btn gm" id="bOrder" title="Set the order realms move in">Order</button>
+    <button class="btn primary gm" id="bTurn">Next realm ▸</button><button class="btn gm" id="bOrder" title="Set the order realms move in">Order</button>
     <button class="btn primary gm" id="bPub" title="Push this turn to the players">⇧ Publish</button>
     <button class="btn gm" id="bUndo" disabled>Undo</button>
     <button class="btn gm" id="bSave">Save</button>
@@ -399,8 +392,7 @@ input[type=file]{display:none}
     <button class="btn" id="bLedger">Ledger</button>
     <button class="btn" id="bRules">Rules</button>
     <button class="btn" id="bHelp">?</button>
-    <button class="btn" id="bGM">GM</button>
-  </div>
+    </div>
 </div>
 
 <div class="hud" id="modes">
@@ -481,7 +473,7 @@ input[type=file]{display:none}
 <h3>Movement</h3>
 <p>Entering a province costs its terrain — <b>plains 1 · hills 2 · mountains 3</b> — plus 1 to cross a river at one of the <b>ten great fords</b> (marked ≈; no other river gates a march). A <b>Road</b> province costs 1, its ford bridged. Each host has <b>3 points a season</b>. Entering a province held by an enemy host ends your movement. In enemy lands a host marches at most <b>one province</b> a season. <b>Force March (1✦):</b> one extra point, but weary — if the host fights this season, the enemy picks the battlefield.</p>
 <h3>Armies</h3>
-<p>Recruit from the Codex (press <b>C</b>) at settlements with a <b>Barracks</b>, paying unit costs in castas at once. Barracks I recruits Tier 1; every Barracks level unlocks its tier and all lower tiers.</p>
+<p>Muster from the Codex (press <b>C</b>) at your settlements, paying unit costs in castas — <b>at once, on your turn</b>. Income arrives only at season's end. <b>Cap: 1 + provinces ÷ 4</b>, rounded down; every host beyond your <b>first</b> needs its own <b>Muster Ground</b>. Upkeep each season: costliest host <b>free</b>, 2nd <b>25%</b>, 3rd <b>50%</b>, 4th <b>75%</b>, further <b>100%</b>.<br><b>Composition — each host may contain at most:</b> 4 pike infantry · 5 missile infantry (archers, crossbows, slingers, skirmishers) · 2 shock/hybrid cavalry, the general's bodyguard does not count · 2 missile cavalry · 1 artillery. The GM refuses a muster that breaks a limit.</p>
 <h3>Battles</h3>
 <p>Hostile hosts sharing a province: the GM <b>stages a battle</b>. It is fought in Attila. The GM records the victor and strikes each fallen regiment from the rolls by name.</p>
 <p><b>The map</b> matches the province's terrain. An entrenched host fights on the <b>fort map</b>. If a force-marched host fights, its enemy chooses the map.</p>
@@ -491,12 +483,12 @@ input[type=file]{display:none}
 <h3>Settlements &amp; Sieges</h3>
 <p>Villages and towns fall by <b>occupation</b> — striped, annexed at season's end (<b>Zealous Annex 1✦</b>: at once). Fortified cities must be <b>besieged</b>: small holds <b>3 seasons</b>, large <b>4</b>, +1 with a Port or Granary. First season builds the engines; assault any season after. A host inside may sally. Garrison budgets, spent by the GM in the battle: <b>town 2,500 · small city 5,000 · large city 7,500</b>.</p>
 <h3>Money</h3>
-<p>All sums in <b>castas</b>. Provinces pay each season; Markets add 300, Ports 600. Realms may gift gold — every gift is chronicled. Each realm begins with <b>5,000 castas</b>, one mounted host, a Market, and a Barracks at its capital.</p>
+<p>All sums in <b>castas</b>. Provinces pay each season; Markets add 300, Ports 600. Realms may gift gold — every gift is chronicled. Each realm begins with <b>5,000 castas</b>, one mounted host, and a Market and Muster Ground at its capital.</p>
 <h3>Works</h3>
 <table class="rtab">
 <tr><th>Work</th><th>Cost</th><th>Effect</th></tr>
 <tr><td>Market</td><td>2,400</td><td>+300 castas a season</td></tr>
-<tr><td>Barracks I–IV</td><td>5,000 / upgrades</td><td>Recruits unit tiers 1–4</td></tr>
+<tr><td>Muster Ground</td><td>5,000</td><td>+1 army</td></tr>
 <tr><td>Road</td><td>3,000</td><td>province costs 1 to enter, ford bridged · never in mountains</td></tr>
 <tr><td>Port</td><td>4,000</td><td>+600 a season · +1 season under siege</td></tr>
 <tr><td>Granary</td><td>2,500</td><td>+1 season under siege</td></tr>
@@ -529,15 +521,7 @@ input[type=file]{display:none}
   </div>
 </div></div>
 
-<div id="gmask"><div class="hcard" style="width:340px">
-  <h2>GM passphrase</h2>
-  <input type="password" id="gmPass" placeholder="passphrase" autocomplete="off" style="margin-bottom:12px">
-  <div id="gmErr" style="color:#E5A594;font-size:12px;min-height:16px;margin-bottom:6px"></div>
-  <div class="row">
-    <button class="btn" id="gmCancel" style="flex:1">Cancel</button>
-    <button class="btn primary" id="gmGo" style="flex:1">Unlock</button>
-  </div>
-</div></div>
+
 
 <div id="help"><div class="hcard">
   <h2>Controls</h2>
@@ -577,7 +561,6 @@ input[type=file]{display:none}
   </div>
   <div id="dBody">
     <div id="dSiegeWarn"></div>
-    <div class="sect gm"><label class="lbl">Tile name</label><input id="dDisplayName" placeholder="Custom province name"></div>
     <div class="sect gm"><label class="lbl">Holder</label><select id="dOwner"></select></div>
     <div class="sect">
       <span class="lbl">Assessment</span>
@@ -594,8 +577,7 @@ input[type=file]{display:none}
       <div class="row" style="margin-bottom:5px">
         <select id="dTierSel" style="flex:1">
           <option value="0">Village</option><option value="1">Unfortified town</option>
-          <option value="2">Fortified city · small</option><option value="3">Fortified city · large</option>
-          <option value="4">Grand city</option></select>
+          <option value="2">Fortified city · small</option><option value="3">Fortified city · large</option></select>
         <select id="dTerrSel" style="flex:1"><option value="plains">Plains</option><option value="hills">Hills</option><option value="mountain">Mountain</option></select>
       </div>
       <div class="row"><input type="number" id="dGarr" min="0" step="50" title="garrison">
@@ -605,7 +587,6 @@ input[type=file]{display:none}
       </div>
     </div>
     <div class="sect" id="dWorksBox"></div>
-    <div class="sect" id="dConstructionQueue"></div>
     <div class="sect gm" id="dClaimBox"></div>
     <div class="sect gm" id="dSiegeBox"></div>
     <div class="sect">
@@ -661,36 +642,12 @@ function sortTurnOrder(activeFaction){
   S.order=[...valid].sort((a,b)=>a.localeCompare(b));
   S.active=Math.max(0,S.order.indexOf(activeFaction));
 }
-let playerFaction="";
-function canSeePlayerSettlement(p){return !!playerFaction&&p.owner===playerFaction;}
-function canSeePlayerConstruction(p){
-  if(!playerFaction)return false;
-  if(p.owner===playerFaction)return true;
-  if(Object.values(p.availableBldOwner||{}).includes(playerFaction))return true;
-  if((p.buildQueue||[]).some(j=>j.payer===playerFaction))return true;
-  return !!(p.upg&&p.upg.payer===playerFaction);
-}
-function setupPlayerFaction(){
-  const picker=$("playerFaction");if(!picker)return;
-  syncPlayerFactionToTurn();
-  picker.disabled=true;
-}
-function syncPlayerFactionToTurn(){
-  playerFaction=S.order&&F[S.order[S.active]]?S.order[S.active]:((S.factions[0]||{}).id||"");
-  const picker=$("playerFaction");
-  if(picker){picker.innerHTML=playerFaction?`<option>${F[playerFaction].name}</option>`:"<option>—</option>";}
-}
 try{const saved=JSON.parse(localStorage.getItem("rqCampaignState")||"null");if(saved&&Array.isArray(saved.provinces)){const by=Object.fromEntries(saved.provinces.map(p=>[p.id,p]));S.provinces.forEach(p=>{const q=by[p.id];if(q&&q.displayName)p.displayName=q.displayName;});}}catch(e){}
 const DEFAULT_CAPITALS={Gondor:"South Ithilien",Mordor:"Harondor",Harad:"Near Harad","Lostladen Tribes":"Near Harad"};
 Object.entries(DEFAULT_CAPITALS).forEach(([fid,pid])=>{
   if(F[fid]&&!F[fid].capital&&P[pid])F[fid].capital=pid;
 });
-const UPG={
-  1:{cost:2000,n:"unfortified city",revenue:500},
-  2:{cost:4000,n:"fortified city (small)",revenue:850},
-  3:{cost:7000,n:"fortified city (large)",revenue:1300},
-  4:{cost:11000,n:"grand city",revenue:1900}
-};
+const UPG={1:{cost:2000,n:"unfortified city",revenue:500},2:{cost:4000,n:"fortified city (small)",revenue:850},3:{cost:7000,n:"fortified city (large)",revenue:1300},4:{cost:11000,n:"grand city",revenue:1900}};
 const SETTLEMENT_REVENUE={0:250,1:500,2:850,3:1300,4:1900};
 S.provinces.forEach(p=>{if(p.playable&&SETTLEMENT_REVENUE[p.tier]!==undefined)p.value=SETTLEMENT_REVENUE[p.tier];});
 const BLD={market:{n:"Market",cost:0,tip:"No spreadsheet cost or income"},port:{n:"Port",cost:0,tip:"No spreadsheet cost or income"},barracks:{n:"Barracks",cost:1000,tip:"Level I recruits Tier 1 units; 50 upkeep per season"},road:{n:"Road",cost:0,tip:"No spreadsheet cost or income"},slavemarket:{n:"Slave Market",cost:0,tip:"No spreadsheet cost or income"},moria_mines:{n:"Moria Mines",cost:0,tip:"No spreadsheet cost or income"},erebor_mines:{n:"Erebor Mines",cost:0,tip:"No spreadsheet cost or income"},slavers:{n:"Slavers",cost:0,tip:"No spreadsheet cost or income"},vineyards:{n:"Vineyards",cost:0,tip:"No spreadsheet cost or income"},horse_farm:{n:"Horse Farm",cost:0,tip:"No spreadsheet cost or income"},gem_mine:{n:"Gem Mine",cost:0,tip:"No spreadsheet cost or income"},mithril_mine:{n:"Mithril Mine",cost:0,tip:"No spreadsheet cost or income"},gold_mine:{n:"Gold Mine",cost:0,tip:"No spreadsheet cost or income"},silver_mine:{n:"Silver Mine",cost:0,tip:"No spreadsheet cost or income"},iron_mine:{n:"Iron Mine",cost:0,tip:"No spreadsheet cost or income"},pipeweed:{n:"Pipeweed Farm",cost:0,tip:"No spreadsheet cost or income"},grain_farm:{n:"Grain Farm",cost:0,tip:"No spreadsheet cost or income"},livestock_farm:{n:"Livestock Farm",cost:0,tip:"No spreadsheet cost or income"},wool:{n:"Wool Production",cost:0,tip:"No spreadsheet cost or income"},dwarven_blacksmith:{n:"Dwarven Blacksmith",cost:0,tip:"No spreadsheet cost or income"},timber:{n:"Timber Yard",cost:0,tip:"No spreadsheet cost or income"},elven_workshop:{n:"Elven Craftsmanship Workshop",cost:0,tip:"No spreadsheet cost or income"},healing_herbs:{n:"Healing Herbs",cost:0,tip:"No spreadsheet cost or income"},fishery:{n:"Fishery",cost:0,tip:"No spreadsheet cost or income"},ship_docks:{n:"Ship Docks",cost:0,tip:"No spreadsheet cost or income"},salt_works:{n:"Salt Works",cost:0,tip:"No spreadsheet cost or income"},stone_quarry:{n:"Stone Quarry",cost:0,tip:"No spreadsheet cost or income"},spice_market:{n:"Spice Market",cost:0,tip:"No spreadsheet cost or income"},exotic_goods:{n:"Exotic Goods",cost:0,tip:"No spreadsheet cost or income"},orcish_craftsmanship:{n:"Orcish Craftsmanship",cost:0,tip:"No spreadsheet cost or income"}};
@@ -706,8 +663,6 @@ const factionBldUpkeep=fid=>S.provinces.filter(p=>p.playable&&p.owner===fid&&!p.
 const tradeLevel=(p,key)=>TRADE_BUILDINGS[key]&&p&&p.bld&&p.bld.includes(key)?Math.max(1,Math.min(5,Number((p.bldLevel||{})[key])||1)):0;
 const tradeRevenue=(p,key)=>{const level=tradeLevel(p,key),trade=TRADE_BUILDINGS[key];return level&&trade?trade.l[level-1][1]:0;};
 const tradeIncome=p=>Object.keys(TRADE_BUILDINGS).reduce((total,key)=>total+tradeRevenue(p,key),0);
-const isCustomBuilding=k=>BLD[k]&&BLD[k].cost===0&&!['barracks','road'].includes(k);
-function persistCampaign(){try{localStorage.setItem("rqCampaignState",JSON.stringify(S));}catch(e){}}
 function pairKey(a,b){const x=[String(a),String(b)].sort();return `${x[0]}|${x[1]}`;}
 function atWar(a,b){if(!a||!b||a===b)return false;return (S.wars||[]).includes(pairKey(a,b));}
 function isAllied(a,b){if(!a||!b||a===b)return false;return (S.allies||[]).includes(pairKey(a,b));}
@@ -741,9 +696,9 @@ let view={x:0,y:0,z:1},sel=null,gm=false,mode="political",paintFac=null;
 let picked=new Set(), armyHits=[], selArmy=null, hover=null, box=null, relief=true;
 const undoStack=[];
 const SEASONS=["Spring","Summer","Autumn","Winter"];
-const TIER={0:"Village",1:"Unfortified town",2:"Fortified city · small",3:"Fortified city · large",4:"Grand city"};
-const TIERLONG={0:"Village",1:"Unfortified town",2:"Fortified city · small",3:"Fortified city · large",4:"Grand city"};
-const GARR={0:50,1:200,2:600,3:1200,4:2000};
+const TIER={0:"Village",1:"Unfortified city",2:"Fortified city · small",3:"Fortified city · large",4:"Grand city"};
+const TIERLONG={0:"Village",1:"Unfortified city",2:"Fortified city · small",3:"Fortified city · large",4:"Grand city"};
+const GARR={0:50,1:200,2:600,3:1200,4:2500};
 const rgb=h=>{
   const m=String(h||"").match(/^#?([0-9a-f]{6})$/i);
   return m?[parseInt(m[1].slice(0,2),16),parseInt(m[1].slice(2,4),16),parseInt(m[1].slice(4,6),16)]:[238,238,238];
@@ -853,11 +808,11 @@ function boot(){
   mapCan=document.createElement("canvas");mapCan.width=W;mapCan.height=H;
   selCan=document.createElement("canvas");selCan.width=W;selCan.height=H;
   $("boot").style.display="none";
-  buildSelects(); setupPlayerFaction(); paintMap(); legend(); resize(); focusRealm(); stats(); drawLedger(); layoutChrome();
+  buildSelects(); paintMap(); legend(); resize(); focusRealm(); stats(); drawLedger(); layoutChrome();
 }
 
 const SHALLOW=[63,104,133], DEEP=[13,27,42];
-function tierCol(t){return [[52,62,70],[104,118,128],[160,148,102],[219,182,88],[238,205,110]][t]||[238,205,110];}
+function tierCol(t){return [[52,62,70],[104,118,128],[160,148,102],[219,182,88]][t];}
 function ramp(v,mx,lo,hi){const f=Math.min(1,v/mx);return [0,1,2].map(i=>Math.round(lo[i]+(hi[i]-lo[i])*f));}
 const SCENERY=[54,58,56];
 function colourOf(p){
@@ -1109,18 +1064,15 @@ function drawSettlement(g,cx,base,u,tier){
     spTower(g,cx+3.1*u,base,1.0*u,1.8*u,false);
     spWall(g,cx-2.9*u,cx+2.9*u,base,1.0*u,cx);
   }else{
-    const grand=tier>=4;
-    const s=grand?1.22:1;
-    spHouse(g,cx-1.9*u*s,base-1.3*u*s,1.2*u*s,.9*u*s);
-    spTower(g,cx-.5*u*s,base-1.3*u*s,1.2*u*s,(grand?3.6:2.8)*u*s,true);
-    spTower(g,cx+1.1*u*s,base-1.3*u*s,1.0*u*s,2.0*u*s,false);
-    spHouse(g,cx+2.3*u*s,base-1.3*u*s,1.3*u*s,1.1*u*s);
-    spTower(g,cx-3.6*u*s,base,1.05*u*s,2.2*u*s,false);
-    spTower(g,cx+3.6*u*s,base,1.05*u*s,2.2*u*s,false);
-    spWall(g,cx-3.4*u*s,cx+3.4*u*s,base,1.3*u*s,cx);
-    spTower(g,cx-.75*u*s,base,.65*u*s,1.75*u*s,false);
-    spTower(g,cx+.75*u*s,base,.65*u*s,1.75*u*s,false);
-    if(grand){spTower(g,cx-2.35*u*s,base-1.25*u*s,.9*u*s,2.35*u*s,true);spTower(g,cx+2.55*u*s,base-1.25*u*s,.9*u*s,2.35*u*s,true);}
+    spHouse(g,cx-1.9*u,base-1.3*u,1.2*u,.9*u);
+    spTower(g,cx-.5*u,base-1.3*u,1.2*u,2.8*u,true);
+    spTower(g,cx+1.1*u,base-1.3*u,1.0*u,2.0*u,false);
+    spHouse(g,cx+2.3*u,base-1.3*u,1.3*u,1.1*u);
+    spTower(g,cx-3.6*u,base,1.05*u,2.2*u,false);
+    spTower(g,cx+3.6*u,base,1.05*u,2.2*u,false);
+    spWall(g,cx-3.4*u,cx+3.4*u,base,1.3*u,cx);
+    spTower(g,cx-.75*u,base,.65*u,1.75*u,false);
+    spTower(g,cx+.75*u,base,.65*u,1.75*u,false);
   }
 }
 function drawLabels(){
@@ -1265,7 +1217,7 @@ function snap(label){
   try{$("bPub").classList.add("on");}catch(e){}
   undoStack.push({label,
     prov:S.provinces.map(p=>({id:p.id,owner:p.owner,tier:p.tier,value:p.value,
-      garrison:p.garrison,terrain:p.terrain,note:p.note,siege:p.siege?{...p.siege}:null,occ:p.occ?{...p.occ}:null,bld:[...(p.bld||[])],bldLevel:{...(p.bldLevel||{})},bldOwner:{...(p.bldOwner||{})},availableBld:[...(p.availableBld||[])],availableBldOwner:{...(p.availableBldOwner||{})},upg:p.upg?{...p.upg}:null,buildQueue:(p.buildQueue||[]).map(j=>({...j})),raid:p.raid?{...p.raid}:null})),
+      garrison:p.garrison,terrain:p.terrain,note:p.note,siege:p.siege?{...p.siege}:null,occ:p.occ?{...p.occ}:null,bld:[...(p.bld||[])],upg:p.upg?{...p.upg}:null,raid:p.raid?{...p.raid}:null})),
     armies:JSON.parse(JSON.stringify(S.armies)),
     fac:S.factions.map(f=>({...f})),
     wars:[...S.wars], battles:JSON.parse(JSON.stringify(S.battles)), fought:{...S.fought}, truces:{...S.truces}, allies:[...S.allies], order:[...S.order], moved:[...(S.moved||[])], active:S.active,
@@ -1423,8 +1375,7 @@ addEventListener("keydown",e=>{
   if(e.key==="-")setZoom(view.z/1.3);
   if(e.key==="f")focusRealm();
   if(e.key==="/"){e.preventDefault();$("q").focus();}
-  if(e.key.toLowerCase()==="g")$("bGM").click();
-  if((e.ctrlKey||e.metaKey)&&e.key==="z"){e.preventDefault();undo();}
+    if((e.ctrlKey||e.metaKey)&&e.key==="z"){e.preventDefault();undo();}
   if(e.key.toLowerCase()==="r")$("bRelief").click();
   if(e.key==="?")$("help").classList.toggle("open");
   if(e.key>="1"&&e.key<="4")document.querySelectorAll("#modes button")[+e.key-1].click();
@@ -1455,7 +1406,6 @@ function openProv(p){
   $("dName").textContent=p.displayName||p.id;
   $("dSub").textContent=(p.modern&&p.modern!==p.id?"today: "+p.modern+"  ·  ":"")+(p.coastal?"coastal":"inland");
   $("dOwner").value=p.owner||"";
-  $("dDisplayName").value=p.displayName||"";
   $("kOwner").innerHTML=(p.owner&&EMBLEMS[p.owner]?`<img src="${EMBLEMS[p.owner]}" style="width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px">`:"")+(p.owner||"unclaimed")+((F[p.owner]||{}).capital===p.id?" ★":"");
   $("kTier").textContent=TIER[p.tier];
   $("kGarr").textContent=p.garrison?p.garrison.toLocaleString():"—";
@@ -1466,8 +1416,7 @@ function openProv(p){
   $("dTierSel").value=p.tier;$("dTerrSel").value=p.terrain;
   $("dGarr").value=p.garrison;$("dVal").value=p.value;
   $("dBody").style.display="block";$("rBody").style.display="none";
-  renderSiegeBox(p);renderClaimBox(p);renderWorksBox(p);renderConstructionQueue(p);
-  $("dDisplayName").onchange=e=>{if(!gm)return;snap("rename tile");p.displayName=e.target.value.trim()||null;persistCampaign();openProv(p);};
+  renderSiegeBox(p);renderClaimBox(p);renderWorksBox(p);
   let warns="";
   if(p.siege)warns+=`<div class="warn" style="margin-bottom:10px">Under siege by <b>${p.siege.by}</b> — ${p.siege.turns} turn${p.siege.turns===1?"":"s"} remaining.</div>`;
   if(p.occ)warns+=`<div class="warn" style="margin-bottom:10px;border-color:rgba(201,160,60,.55);background:rgba(201,160,60,.12);color:#E8D2A0">Occupied by <b>${p.occ.by}</b> — annexes at end of turn.</div>`;
@@ -1529,9 +1478,7 @@ function openRealm(fid){
   // upkeep: steepest host pays full, the rest at the sliding rate; holy hosts are free
   const upk=(()=>{const ds=hosts.map(armyUpkeep).sort((x,y)=>y-x);let u=0;
     ds.forEach((x,i)=>u+=Math.round(x*(i<UPKEEP_RATES.length?UPKEEP_RATES[i]:1)));return u;})();
-  const bldUpk=typeof factionBldUpkeep==="function"?factionBldUpkeep(fid):0;
-  const totalUpk=upk+bldUpk;
-  const net=inc-totalUpk;
+  const net=inc-upk;
   const men=hosts.reduce((a,x)=>a+x.men,0);
   const others=S.factions.filter(x=>x.id!==fid);
   rb.innerHTML=`
@@ -1550,13 +1497,13 @@ function openRealm(fid){
       <div class="kv"><b>Provinces</b><span>${held.length}</span></div>
       <div class="kv" id="incRow" style="cursor:pointer" title="Click for the sources"><b>Income / turn <span style="color:var(--dimmer)">▸</span></b><span>${inc.toLocaleString()}◈</span></div>
       <div class="aroster" id="incBrk">${ib.rows.map(r=>`<div class="ru"><span class="un">${r.id}</span><span class="us">${r.note}${r.v?` = ${r.v.toLocaleString()}`:""}</span></div>`).join("")||'<div class="ru"><span class="us">No revenue.</span></div>'}</div>
-      <div class="kv"><b>Upkeep / turn</b><span>${totalUpk.toLocaleString()}◈${bldUpk?` <span style="font-size:11px;color:var(--dimmer)">(armies ${upk.toLocaleString()} + barracks ${bldUpk.toLocaleString()})</span>`:""}</span></div>
+      <div class="kv"><b>Upkeep / turn</b><span>${upk.toLocaleString()}◈</span></div>
       <div class="kv" title="Income minus upkeep — what the treasury actually gains each turn"><b>Net income / turn</b><span style="color:${net<0?"#E5A594":(net>0?"#8FBF7F":"var(--bone)")}">${net>0?"+":""}${net.toLocaleString()}◈</span></div>
       <div class="kv"><b>Zeal</b><span class="gm" style="padding:0"><input type="number" id="rZeal" value="${f.zeal||0}" min="0" max="10" style="width:60px;text-align:right"></span><span style="display:${gm?"none":"inline"}">${f.zeal||0} ✦</span></div>
       <div class="kv"><b>Hosts</b><span>${hosts.filter(a=>!a.holy).length}${hosts.some(a=>a.holy)?` <span style="color:var(--brass)">+${hosts.filter(a=>a.holy).length} holy</span>`:""} · ${men.toLocaleString()} men</span></div>
-      <div class="kv"><b>Host cap</b><span>${(()=>{const mg=held.filter(p=>p.bld&&p.bld.includes("barracks")).length;
+      <div class="kv"><b>Host cap</b><span>${(()=>{const mg=held.filter(p=>p.bld&&p.bld.includes("muster")).length;
         const capF=1+Math.floor(held.length/4);const allowed=Math.min(capF,1+mg);
-        return `${allowed} (formula ${capF} · ${mg} barracks${mg===1?"":"es"})`;})()}</span></div>
+        return `${allowed} (formula ${capF} · ${mg} muster ground${mg===1?"":"s"})`;})()}</span></div>
       <div class="kv"><b>Capital</b><span>${f.capital||"—"} ${f.capital?`<button class="btn sm" id="rGoCap">→</button>`:""}</span></div>
     </div>
     <div class="sect">
@@ -1588,14 +1535,6 @@ function openRealm(fid){
       </div>
     </div>
     <div class="sect gm">
-      <span class="lbl">GM treasury adjustment</span>
-      <div class="row" style="margin-top:6px">
-        <select id="rGMCastasTo" style="flex:1">${S.factions.map(o=>`<option value="${o.id}" ${o.id===fid?"selected":""}>${o.name}</option>`).join("")}</select>
-        <input type="number" id="rGMCastasAmt" placeholder="castas" min="1" step="100" style="width:96px">
-        <button class="btn primary" id="rGMCastasGo">Add</button>
-      </div>
-    </div>
-    <div class="sect gm">
       <button class="btn wide" id="rCrusade" title="10✦ — a free host, no upkeep, above the cap; disbands when the war ends">${fid==="Almohads"?"Proclaim Jihad":"Call Crusade"} · 10✦</button>
     </div>
     <div class="sect gm">
@@ -1624,15 +1563,6 @@ function openRealm(fid){
     f.treasury-=amt;F[to].treasury+=amt;
     logIt(`${f.name} gifts ${amt.toLocaleString()} castas to ${F[to].name}`);
     legend();drawLedger();openRealm(fid);toast("Gift sent and recorded");
-  };
-  const ga=rb.querySelector("#rGMCastasGo");if(ga)ga.onclick=()=>{
-    const to=rb.querySelector("#rGMCastasTo").value;
-    const amt=Math.floor(Math.max(0,+rb.querySelector("#rGMCastasAmt").value||0));
-    if(!amt){toast("Enter a casta amount");return;}
-    snap("GM treasury adjustment");
-    F[to].treasury+=amt;
-    logIt(`GM adds ${amt.toLocaleString()} castas to ${F[to].name}'s treasury.`);
-    persistCampaign();legend();drawLedger();openRealm(fid);toast(`${amt.toLocaleString()} castas added to ${F[to].name}`);
   };
   const rd2=rb.querySelector("#rDissolve");if(rd2)rd2.onclick=()=>{
     if(rd2.dataset.armed!=="1"){rd2.dataset.armed="1";rd2.textContent="Click again — "+f.name+" will be struck from the map";return;}
@@ -1809,7 +1739,7 @@ function bindEdit(id,fn,label){
     paintMap();legend();openProv(P[sel]);};
 }
 bindEdit("dOwner",(p,v)=>{p.owner=v||null;p.occ=null;},"holder");
-bindEdit("dTierSel",(p,v)=>{p.tier=+v;p.garrison=GARR[+v];p.value=SETTLEMENT_REVENUE[+v];},"settlement tier");
+bindEdit("dTierSel",(p,v)=>{p.tier=+v;p.garrison=GARR[+v];},"settlement tier");
 bindEdit("dTerrSel",(p,v)=>p.terrain=v,"terrain");
 bindEdit("dGarr",(p,v)=>p.garrison=+v,"garrison");
 bindEdit("dVal",(p,v)=>p.value=+v,"revenue");
@@ -1817,29 +1747,17 @@ function renderWorksBox(p){
   const box=$("dWorksBox");if(!box)return;
   if(!p.playable){box.innerHTML="";return;}
   let h='<span class="lbl">Works</span>';
-  const built=p.bld.filter(b=>BLD[b]).map(b=>{const level=tradeLevel(p,b),trade=TRADE_BUILDINGS[b],queued=(p.buildQueue||[]).some(j=>j.key===b&&j.kind==="tradeUpgrade");const detail=trade?`Level ${level} · +${tradeRevenue(p,b)} revenue per season`:BLD[b].tip;return `<div class="kv"><b>${BLD[b].n}</b><span style="font-size:11px;color:var(--dim)">${detail}${p.bldOwner&&p.bldOwner[b]&&F[p.bldOwner[b]]?` · ${F[p.bldOwner[b]].name}`:""}${queued?` · upgrade queued`:gm&&trade&&level<5?` <button class="btn sm" data-trade-up="${b}" data-trade-level="${level+1}">Upgrade to ${level+1} · ${trade.l[level][0].toLocaleString()}</button>`:""}</span></div>`;}).join("");
+  const built=p.bld.filter(b=>BLD[b]).map(b=>{const level=tradeLevel(p,b),trade=TRADE_BUILDINGS[b];const detail=trade?`Level ${level} · +${tradeRevenue(p,b)} revenue per season`:BLD[b].tip;return `<div class="kv"><b>${BLD[b].n}</b><span style="font-size:11px;color:var(--dim)">${detail}${p.bldOwner&&p.bldOwner[b]&&F[p.bldOwner[b]]?` · ${F[p.bldOwner[b]].name}`:""}</span></div>`;}).join("");
   h+=built||'<div style="font-size:12px;color:var(--dimmer);padding:5px 0">Nothing built.</div>';
-  if(barracksLevel(p)){
-    const next=barracksLevel(p)+1;
-    h+=`<div class="kv"><b>Barracks level</b><span>Level ${barracksLevel(p)} · Tiers 1–${barracksLevel(p)}${gm&&next<=4?` <button class="btn sm" data-barr-up="${next}">Upgrade to ${next} · ${(BARRACKS_UPGRADE_COST[next]/1000).toFixed(0)}k</button>`:""}</span></div>`;
-  }
-  const ownView=canSeePlayerConstruction(p);
-  const available=(p.availableBld||[]).filter(k=>BLD[k]&&!p.bld.includes(k));
-  const visibleAvailable=gm?available:available.filter(k=>(p.availableBldOwner||{})[k]===playerFaction);
-  if((gm||ownView)&&visibleAvailable.length){
-    h+='<span class="lbl" style="display:block;margin-top:12px">Available construction</span>';
-    h+=visibleAvailable.map(key=>{const b=BLD[key],owner=(p.availableBldOwner||{})[key],who=owner&&F[owner]?` · ${F[owner].name}`:"";
-      return `<div class="kv"><div><b>${b.n}</b><div style="font-size:11px;color:var(--dim)">${b.tip}${who}</div></div>${gm?`<span style="display:flex;gap:4px"><button class="btn sm primary" data-bq="${key}">Queue · ${(b.cost/1000).toFixed(1)}k</button><button class="btn sm" data-buassign="${key}" title="Remove from this tile's available building roster">×</button></span>`:`<span style="font-size:11px;color:var(--brass)">${(b.cost/1000).toFixed(1)}k · ask GM</span>`}</div>`;}).join("");
-  }
+  if(p.upg&&UPG[p.upg.to])h+=`<div class="kv"><b>Under construction</b><span style="color:var(--brass)">${UPG[p.upg.to].n} · ${p.upg.left} turn${p.upg.left===1?"":"s"}</span></div>`;
   if(gm){
     const owner=p.owner?F[p.owner]:null;
-    const queued=new Set((p.buildQueue||[]).map(j=>j.key));
     const rows=[];
     for(const key of Object.keys(BLD)){
-      if(p.bld.includes(key)||queued.has(key)||available.includes(key))continue;
+      if(p.bld.includes(key))continue;
       if(key==="road"&&p.terrain==="mountain")continue;
       if(key==="port"&&(!p.coastal||p.tier<1))continue;
-      if(key==="barracks"&&p.tier<1)continue;
+      if(key==="muster"&&p.tier<1)continue;
       if(key==="slavemarket"&&p.tier<1)continue;
       if(key==="synagogue"&&p.tier<2)continue;
       if(key==="synagogue"&&p.expelled)continue;
@@ -1849,19 +1767,15 @@ function renderWorksBox(p){
     }
     if(p.tier<4&&!p.upg){
       const t=p.tier+1;
-      rows.push(`<button class="btn sm primary" data-bu="${t}" style="flex:1 1 100%">Upgrade to ${UPG[t].n} · ${(UPG[t].cost/1000).toFixed(0)}k · ${UPG[t].revenue.toLocaleString()} revenue / turn</button>`);
+      rows.push(`<button class="btn sm primary" data-bu="${t}" style="flex:1 1 100%">Upgrade to ${UPG[t].n} · ${(UPG[t].cost/1000).toFixed(0)}k · 1 turn</button>`);
     }
-    if(rows.length)h+=`<div class="row" style="flex-wrap:wrap;gap:5px;margin-top:8px"><select id="customBldFaction" style="flex:1 1 100%"><option value="">Make buildings available to…</option>${S.factions.map(f=>`<option value="${f.id}"${f.id===p.owner?" selected":""}>${f.name}</option>`).join("")}</select><div class="hint" style="flex:1 1 100%;margin:0">Click a building to add it to this tile's player-visible roster. Queue it from Available construction when ready.</div>${rows.join("")}</div>`;
+    if(rows.length)h+=`<div class="row" style="flex-wrap:wrap;gap:5px;margin-top:8px">${rows.join("")}</div>`;
     if(p.bld.includes("synagogue"))h+=`<div class="row" style="margin-top:6px"><button class="btn sm" data-bexp="1" style="flex:1" title="Pay 1,500 for the upheaval · +1✦ as the zealots rejoice · your Zeal ceiling is restored · this city may never charter another">Expel the community · 1,500 · +1✦</button></div>`;
     if(owner)h+=`<div class="hint" style="margin-top:5px">${owner.name} holds ${owner.treasury.toLocaleString()} castas.</div>`;
   }
-  else if(canSeePlayerSettlement(p)&&p.tier<4&&!p.upg){
-    const t=p.tier+1;
-    h+=`<div class="row" style="margin-top:8px"><button class="btn sm primary" disabled style="flex:1">Upgrade to ${UPG[t].n} · ${(UPG[t].cost/1000).toFixed(0)}k · ${UPG[t].revenue.toLocaleString()} revenue / turn</button></div><div class="hint" style="margin-top:5px">Ask the GM to queue this construction.</div>`;
-  }
   box.innerHTML=h;
-  const pay=(cost,fid=p.owner)=>{
-    const f=fid?F[fid]:null;
+  const pay=(cost)=>{
+    const f=p.owner?F[p.owner]:null;
     if(!f){toast("Unclaimed ground builds nothing");return false;}
     if(f.treasury<cost){toast(`${f.name} holds only ${f.treasury.toLocaleString()} of ${cost.toLocaleString()}`);return false;}
     f.treasury-=cost;return true;
@@ -1879,92 +1793,22 @@ function renderWorksBox(p){
   });
   box.querySelectorAll("[data-bb]").forEach(b=>b.onclick=()=>{
     const key=b.dataset.bb;
-    snap("assign building "+key);
-    const fid=$("customBldFaction").value||p.owner||null;
-    if(!fid){undoStack.pop();$("bUndo").disabled=!undoStack.length;toast("Choose a faction for this building");return;}
-    p.availableBld=p.availableBld||[];p.availableBldOwner=p.availableBldOwner||{};
-    p.availableBld.push(key);p.availableBldOwner[key]=fid;
-    logIt(`${fid} may construct ${BLD[key].n} at ${p.id}.`);
-    persistCampaign();legend();drawLedger();openProv(p);
-  });
-  box.querySelectorAll("[data-bq]").forEach(b=>b.onclick=()=>{
-    const key=b.dataset.bq,fid=(p.availableBldOwner||{})[key]||p.owner;
-    snap("queue building "+key);
-    if(!pay(BLD[key].cost,fid)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
-    p.buildQueue=p.buildQueue||[];p.buildQueue.push({key,payer:fid,cost:BLD[key].cost,startedTurn:S.turn,startedDate:`${S.season} ${S.year}`});
-    logIt(`${fid} starts construction: ${BLD[key].n} at ${p.id} (${BLD[key].cost.toLocaleString()} castas)`);
-    persistCampaign();legend();drawLedger();openProv(p);
-  });
-  box.querySelectorAll("[data-barr-up]").forEach(b=>b.onclick=()=>{
-    const toLevel=+b.dataset.barrUp,cost=BARRACKS_UPGRADE_COST[toLevel];snap("upgrade barracks");
-    if(!pay(cost,p.owner)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
-    p.buildQueue=p.buildQueue||[];p.buildQueue.push({key:"barracks",kind:"barracksUpgrade",toLevel,payer:p.owner,cost,startedTurn:S.turn,startedDate:`${S.season} ${S.year}`});
-    logIt(`${p.owner} starts upgrading Barracks at ${p.id} to Level ${toLevel} (${cost.toLocaleString()} castas)`);persistCampaign();legend();drawLedger();openProv(p);
-  });
-  box.querySelectorAll("[data-trade-up]").forEach(b=>b.onclick=()=>{
-    const key=b.dataset.tradeUp,toLevel=+b.dataset.tradeLevel,trade=TRADE_BUILDINGS[key],cost=trade&&trade.l[toLevel-1][0];
-    if(!trade||!cost)return;
-    snap("upgrade "+trade.n);
-    if(!pay(cost,p.owner)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
-    p.buildQueue=p.buildQueue||[];p.buildQueue.push({key,kind:"tradeUpgrade",toLevel,payer:p.owner,cost,startedTurn:S.turn,startedDate:`${S.season} ${S.year}`});
-    logIt(`${p.owner} starts upgrading ${trade.n} at ${p.id} to Level ${toLevel} (${cost.toLocaleString()} castas)`);persistCampaign();legend();drawLedger();openProv(p);
-  });
-  box.querySelectorAll("[data-buassign]").forEach(b=>b.onclick=()=>{
-    const key=b.dataset.buassign;snap("remove available building");
-    p.availableBld=(p.availableBld||[]).filter(k=>k!==key);if(p.availableBldOwner)delete p.availableBldOwner[key];
-    logIt(`${BLD[key].n} is no longer available at ${p.id}.`);persistCampaign();openProv(p);
+    snap("build "+key);
+    if(!pay(BLD[key].cost)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
+    p.bld.push(key);
+    if(key==="synagogue"){
+      const zf=F[p.owner];if(zf){zf.zeal=Math.max(0,(zf.zeal||0)-1);zf.zeal=Math.min(zf.zeal,zealCap(p.owner));}
+      logIt(`${p.owner} charters a Synagogue at ${p.id} — the community pays 2,500 castas; the crown spends 1✦ of standing`);
+    } else logIt(`${p.owner} raises a ${BLD[key].n} at ${p.id} (${BLD[key].cost.toLocaleString()} castas)`);
+    legend();drawLedger();openProv(p);
   });
   box.querySelectorAll("[data-bu]").forEach(b=>b.onclick=()=>{
     const t=+b.dataset.bu;
     snap("upgrade "+p.id);
     if(!pay(UPG[t].cost)){undoStack.pop();$("bUndo").disabled=!undoStack.length;return;}
-    p.upg={to:t,payer:p.owner,startedTurn:S.turn,startedDate:`${S.season} ${S.year}`,cost:UPG[t].cost};
-    logIt(`${p.owner} starts construction: ${p.id} → ${UPG[t].n} (${UPG[t].cost.toLocaleString()} castas)`);
+    p.upg={to:t,left:1};
+    logIt(`${p.owner} begins raising ${p.id} to a ${UPG[t].n} (${UPG[t].cost.toLocaleString()} castas)`);
     legend();drawLedger();openProv(p);
-  });
-}
-function renderConstructionQueue(p){
-  const box=$("dConstructionQueue");if(!box)return;
-  const ownView=canSeePlayerConstruction(p);
-  if(!p.playable||(!gm&&!ownView)){box.innerHTML="";return;}
-  const jobs=[];
-  if(p.upg&&UPG[p.upg.to])jobs.push({type:"settlement",...p.upg});
-  (p.buildQueue||[]).filter(j=>BLD[j.key]).forEach(j=>jobs.push({type:"building",...j}));
-  const visibleJobs=gm?jobs:jobs.filter(j=>(j.payer||p.owner)===playerFaction);
-  if(!visibleJobs.length){
-    box.innerHTML='<span class="lbl">Construction queue</span><div style="font-size:12px;color:var(--dimmer);padding:5px 0">No settlement work queued.</div>';
-    return;
-  }
-  box.innerHTML='<span class="lbl">Construction queue</span>'+visibleJobs.map((job,i)=>{
-    const name=job.type==="settlement"?`${TIER[p.tier]} → ${UPG[job.to].n}`:job.kind==="barracksUpgrade"?`Barracks → Level ${job.toLevel}`:job.kind==="tradeUpgrade"?`${TRADE_BUILDINGS[job.key].n} → Level ${job.toLevel}`:BLD[job.key].n;
-    const started=job.startedDate||(job.left!==undefined?"Legacy queue item":"Unknown date");
-    return `<div class="kv" style="align-items:flex-start;gap:8px"><div><b>${name}</b><div style="font-size:11px;color:var(--brass);margin-top:3px">Started T${job.startedTurn||S.turn} · ${started} · ${Number(job.cost||0).toLocaleString()} castas</div><div style="font-size:11px;color:var(--dimmer);margin-top:2px">Awaiting GM decision.</div></div>${gm?`<span style="display:flex;gap:4px"><button class="btn sm" data-cq-decline="${i}" title="Decline construction and refund the payer">×</button><button class="btn sm primary" data-cq-complete="${i}">Constructed</button></span>`:""}</div>`;
-  }).join("");
-  const removeJob=(job)=>{if(job.type==="settlement")p.upg=null;else{const q=p.buildQueue||[],i=q.indexOf(job._source);if(i>=0)q.splice(i,1);}};
-  jobs.forEach(job=>{if(job.type==="building")job._source=(p.buildQueue||[]).find(q=>q===job||q.key===job.key&&q.startedTurn===job.startedTurn&&q.startedDate===job.startedDate);});
-  box.querySelectorAll("[data-cq-decline]").forEach(b=>b.onclick=()=>{
-    const job=visibleJobs[+b.dataset.cqDecline];if(!job)return;snap("decline construction");
-    const payer=F[job.payer||p.owner];if(payer)payer.treasury+=Number(job.cost)||0;
-    removeJob(job);logIt(`${p.id}: construction declined — ${(payer||{}).name||job.payer||"the payer"} refunded ${Number(job.cost||0).toLocaleString()} castas.`);
-    persistCampaign();legend();drawLedger();openProv(p);
-  });
-  box.querySelectorAll("[data-cq-complete]").forEach(b=>b.onclick=()=>{
-    const job=visibleJobs[+b.dataset.cqComplete];if(!job)return;snap("complete construction");
-    if(job.type==="settlement"){
-      p.tier=job.to;p.garrison=GARR[job.to];p.value=SETTLEMENT_REVENUE[job.to];
-      logIt(`${p.id} completes its works — now a ${UPG[job.to].n}.`);
-    }else if(job.kind==="barracksUpgrade"){
-      p.bldLevel=p.bldLevel||{};p.bldLevel.barracks=job.toLevel;
-      logIt(`Barracks at ${p.id} reaches Level ${job.toLevel} — units through Tier ${job.toLevel} are now recruitable.`);
-    }else if(job.kind==="tradeUpgrade"){
-      p.bldLevel=p.bldLevel||{};p.bldLevel[job.key]=job.toLevel;
-      logIt(`${TRADE_BUILDINGS[job.key].n} at ${p.id} reaches Level ${job.toLevel} — it now yields ${tradeRevenue(p,job.key)} castas each season.`);
-    }else{
-      p.bld.push(job.key);if(job.key==="barracks"){p.bldLevel=p.bldLevel||{};p.bldLevel.barracks=1;}if(TRADE_BUILDINGS[job.key]){p.bldLevel=p.bldLevel||{};p.bldLevel[job.key]=1;}if(isCustomBuilding(job.key)){p.bldOwner=p.bldOwner||{};p.bldOwner[job.key]=job.payer;}
-      if(job.key==="synagogue"){const zf=F[p.owner];if(zf){zf.zeal=Math.max(0,(zf.zeal||0)-1);zf.zeal=Math.min(zf.zeal,zealCap(p.owner));}}
-      logIt(`${BLD[job.key].n} completed at ${p.id}.`);
-    }
-    removeJob(job);persistCampaign();paintMap();legend();drawLedger();openProv(p);
   });
 }
 function renderClaimBox(p){
@@ -2175,7 +2019,6 @@ function formatCampaignDate(){
 
 function stats(){
   normalizeCampaignClock();
-  if(!gm)syncPlayerFactionToTurn();
   $("sTurn").textContent=S.turn;
   $("sDate").textContent=formatCampaignDate();
   const fid=S.order[S.active], f=F[fid];
@@ -2219,86 +2062,18 @@ $("bRelief").onclick=()=>{
 $("zIn").onclick=()=>setZoom(view.z*1.35);
 $("zOut").onclick=()=>setZoom(view.z/1.35);
 $("zFit").onclick=focusRealm;
-const GM_HASH="058bfedcbbfd843680ccd5f8dba9f6470dfafe9bab775958e4dea87cae582ba4";
 const store={
   get(k){try{return sessionStorage.getItem(k);}catch(e){return this._m&&this._m[k];}},
   set(k,v){try{sessionStorage.setItem(k,v);}catch(e){(this._m=this._m||{})[k]=v;}}
 };
-function sha256js(ascii){
-  function rr(v,c){return v>>>c|v<<32-c}
-  const K=[],H=[];let p=2,i=0,c;
-  for(;i<64;p++){c=true;for(let f=2;f*f<=p;f++)if(p%f===0){c=false;break}
-    if(c){if(i<8)H[i]=(Math.pow(p,.5)*4294967296)|0;K[i++]=(Math.pow(p,1/3)*4294967296)|0}}
-  const bytes=new TextEncoder().encode(ascii);
-  let l=bytes.length*8,msg=[...bytes,0x80];
-  while(msg.length%64!==56)msg.push(0);
-  for(let b=56;b>=0;b-=8)msg.push(l/Math.pow(2,b)&255);
-  const h=H.slice();
-  for(let j=0;j<msg.length;j+=64){
-    const w=[],v=h.slice();
-    for(let t=0;t<64;t++){
-      w[t]=t<16?(msg[j+t*4]<<24|msg[j+t*4+1]<<16|msg[j+t*4+2]<<8|msg[j+t*4+3]):
-        (w[t-16]+(rr(w[t-15],7)^rr(w[t-15],18)^w[t-15]>>>3)+w[t-7]+(rr(w[t-2],17)^rr(w[t-2],19)^w[t-2]>>>10))|0;
-      const t1=v[7]+(rr(v[4],6)^rr(v[4],11)^rr(v[4],25))+((v[4]&v[5])^(~v[4]&v[6]))+K[t]+w[t],
-            t2=(rr(v[0],2)^rr(v[0],13)^rr(v[0],22))+((v[0]&v[1])^(v[0]&v[2])^(v[1]&v[2]));
-      v.unshift((t1+t2)|0);v[4]=(v[4]+t1)|0;v.pop();
-    }
-    for(let t=0;t<8;t++)h[t]=(h[t]+v[t])|0;
-  }
-  return h.map(x=>(x>>>0).toString(16).padStart(8,"0")).join("");
-}
-async function sha256(t){
-  try{
-    if(crypto&&crypto.subtle){
-      const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));
-      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
-    }
-  }catch(e){}
-  return sha256js(t);
-}
-/* Auto-restore GM */
-setTimeout(function(){try{if(store.get('gmOK')==='1')setGM(true);}catch(e){}},50);
-function setGM(on){
-  gm=on;document.body.classList.toggle("readonly",!gm);
-  requestAnimationFrame(layoutChrome);
-  $("bGM").classList.toggle("on",gm);$("bGM").textContent=gm?"GM ✓":"GM";
-  if(!gm){syncPlayerFactionToTurn();paintFac=null;selArmy=null;reach=null;picked.clear();cv.classList.remove("paint");paintSel();updateSelInfo();if(sel)openProv(P[sel]);}
-  drawLedger();legend();draw();
-}
-$("bGM").onclick=()=>{
-  if(gm){setGM(false);return;}
-  if(store.get("gmOK")==="1"){setGM(true);return;}
-  $("gmErr").textContent="";$("gmPass").value="";
-  $("gmask").classList.add("open");
-  setTimeout(()=>$("gmPass").focus(),40);
-};
-async function gmTry(){
-  const t=$("gmPass").value;
-  if(!t)return;
-  if(t==="papagatorisagamer"||await sha256(t)===GM_HASH){
-    store.set("gmOK","1");
-    $("gmask").classList.remove("open");
-    setGM(true);toast("The realm obeys");
-  } else {
-    $("gmErr").textContent="Wrong passphrase.";
-    $("gmPass").select();
-  }
-}
-$("gmGo").onclick=gmTry;
-$("gmPass").onkeydown=e=>{if(e.key==="Enter")gmTry();if(e.key==="Escape")$("gmask").classList.remove("open");};
-$("gmCancel").onclick=()=>$("gmask").classList.remove("open");
-$("gmask").onclick=e=>{if(e.target.id==="gmask")$("gmask").classList.remove("open");};
+
+
+function setGM(on){gm=false;document.body.classList.add("readonly");requestAnimationFrame(layoutChrome);drawLedger();legend();draw();}
 function logIt(txt,kind,detail){ S.log.unshift({t:S.turn,d:formatCampaignDate(),txt,kind:kind||"",detail:detail||null}); }
 const UPKEEP_RATES=[0,.25,.5,.75];
 function armyUpkeep(a){
-  if(!a||a.holy)return 0;
-  /* cxBy is initialised later in the script (after the codex loads).
-     Guard against the temporal-dead-zone ReferenceError that killed boot. */
-  if(Array.isArray(a.units)&&a.units.length&&typeof cxBy!=="undefined"){
-    const uSum=a.units.reduce((s,k)=>s+((cxBy[k]||{}).upkeep||0),0);
-    if(uSum>0)return uSum;
-  }
-  if(a.upkeep)return a.upkeep;
+  if(a.holy)return 0;
+  if(Array.isArray(a.units)&&a.upkeep)return a.upkeep;
   return Math.round((a.men||0)*2.1);
 }
 function gk(n){n=n||0;return n>=10000?(n/1000).toFixed(0)+"k":n>=1000?(n/1000).toFixed(1)+"k":String(n);}
@@ -2351,8 +2126,17 @@ $("bTurn").onclick=()=>{
     }
   }
 
-  // Settlement upgrades remain in the GM's construction queue until the GM
-  // completes them manually through the Adjust controls on that settlement.
+  for(const p of S.provinces){
+    if(!p.upg)continue;
+    p.upg.left--;
+    if(p.upg.left<=0){
+      p.tier=p.upg.to;
+      p.garrison={0:0,1:2500,2:5000,3:7500}[p.tier];
+      p.value=SETTLEMENT_REVENUE[p.tier];
+      events.push(`${p.id} completed its works — now a ${UPG[p.tier].n}`);
+      p.upg=null;
+    }
+  }
 
   const gain={};S.factions.forEach(f=>gain[f.id]=0);
   for(const p of S.provinces){
@@ -2375,7 +2159,7 @@ $("bTurn").onclick=()=>{
   }
   for(const f of S.factions){
     const dues=S.armies.filter(a=>a.faction===f.id).map(armyUpkeep).sort((a,b)=>b-a);
-    let upkeep=typeof factionBldUpkeep==="function"?factionBldUpkeep(f.id):0;
+    let upkeep=0;
     dues.forEach((u,i)=>upkeep+=Math.round(u*(i<UPKEEP_RATES.length?UPKEEP_RATES[i]:1)));
     f.treasury+=(gain[f.id]||0)-upkeep;
     if(f.treasury<0){
@@ -2400,20 +2184,6 @@ $("bTurn").onclick=()=>{
 
   paintMap();stats();legend();drawLedger();if(sel)openProv(P[sel]);
   toast(`${S.season} ${S.year} — income and upkeep settled${S.battles.length?` · ${S.battles.length} battle${S.battles.length===1?"":"s"} pending`:""}`);
-};
-
-$("bClock").onclick=()=>{
-  const raw=prompt("Set the current campaign turn number:",String(S.turn));
-  if(raw===null)return;
-  const turn=Math.floor(Number(raw));
-  if(!Number.isFinite(turn)||turn<1){toast("Enter a whole turn number of 1 or more");return;}
-  if(turn===S.turn)return;
-  snap("set campaign turn");
-  const was=S.turn;
-  S.turn=turn;
-  logIt(`GM changes the campaign turn from ${was} to ${turn}.`,"turn");
-  persistCampaign();stats();drawLedger();
-  toast(`Campaign set to turn ${turn}`);
 };
 
 function openLedger(tab){
@@ -2599,7 +2369,7 @@ $("help").onclick=e=>{if(e.target.id==="help")$("help").classList.remove("open")
 $("bSave").onclick=()=>{
   const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(b);
-  a.download="campaign.json";a.click();
+  a.download=`campaign-t${String(S.turn).padStart(2,"0")}.json`;a.click();
   toast("Saved");
 };
 /* ---------- one-button publish to GitHub ---------- */
@@ -2656,7 +2426,7 @@ $("fLoad").onchange=e=>{
       d.factions.forEach(nf=>{S.factions.push(nf);F[nf.id]=nf;});}
     sortTurnOrder(S.order[S.active]);
     (d.provinces||[]).forEach(np=>{if(P[np.id])Object.assign(P[np.id],{
-      owner:np.owner,note:np.note,siege:np.siege??null,occ:np.occ??null,bld:np.bld||[],bldLevel:np.bldLevel||{},bldOwner:np.bldOwner||{},availableBld:np.availableBld||[],availableBldOwner:np.availableBldOwner||{},upg:np.upg??null,buildQueue:np.buildQueue||[],raid:np.raid??null,tier:np.tier??P[np.id].tier,
+      owner:np.owner,note:np.note,siege:np.siege??null,occ:np.occ??null,bld:np.bld||[],upg:np.upg??null,raid:np.raid??null,tier:np.tier??P[np.id].tier,
       value:np.value??P[np.id].value,garrison:np.garrison??P[np.id].garrison,
       terrain:np.terrain??P[np.id].terrain});});
     buildSelects();paintMap();legend();stats();drawLedger();if(sel)openProv(P[sel]);
@@ -2675,9 +2445,9 @@ function renderFullMap(){
     if(!p.playable)continue;
     const fs=Math.max(11,Math.min(30,Math.sqrt(p.px)*.062));
     if(p.tier>0){
-      const r=p.tier>=4?8.5:p.tier===3?7:p.tier===2?5.5:4.4;
+      const r=p.tier===3?7:p.tier===2?5.5:4.4;
       x.beginPath();x.arc(p.cx,p.cy-fs*1.3,r,0,6.2832);
-      x.fillStyle=p.tier>=4?"#FFE49A":p.tier===3?"#FFD65C":p.tier===2?"#E8E0C8":"#A3B0BA";
+      x.fillStyle=p.tier===3?"#FFD65C":p.tier===2?"#E8E0C8":"#A3B0BA";
       x.fill();x.lineWidth=1.8;x.strokeStyle="#0A0E12";x.stroke();
     }
     x.font=`600 ${fs}px "Cinzel", Georgia, serif`;
@@ -2747,7 +2517,7 @@ function turnSnapshot(label){
 <div id="codex">
   <div id="cxHead">
     <h2>CODEX</h2>
-    <span id="cxMusterTag"></span><label id="cxFactionWrap">Faction <select id="cxFaction" aria-label="Roster faction filter"><option value="">All factions</option></select></label><button class="btn" id="cxExport" title="Download this host as an Attila .army_setup file — drop it in %APPDATA%\The Creative Assembly\Attila\army_setups\ and load it in the custom battle lobby">⬇ Attila setup</button>
+    <span id="cxMusterTag"></span><button class="btn" id="cxExport" title="Download this host as an Attila .army_setup file — drop it in %APPDATA%\The Creative Assembly\Attila\army_setups\ and load it in the custom battle lobby">⬇ Attila setup</button>
     <input type="text" id="cxQ" placeholder="search units… " autocomplete="off">
     <span id="cxRealms"></span>
     <select id="cxCls"><option value="">All classes</option></select>
@@ -2790,8 +2560,7 @@ const CX=JSON.parse($("codexdata").textContent);
 CX.units.forEach(u=>{if(u.faction==="Rhun")u.faction="Rhurrim";});
 CX.factions=(CX.factions||[]).map(f=>typeof f==="string"?(f==="Rhun"?"Rhurrim":f):({...f,name:f.name==="Rhun"?"Rhurrim":f.name,id:f.id==="Rhun"?"Rhurrim":f.id}));
 const CAPU=CX.cap||20;
-const CX_CLASSES=Array.isArray(CX.classes)?CX.classes:[];
-const cxBy={};(CX.units||[]).forEach(u=>cxBy[u.unit_key]=u);
+const cxBy={};CX.units.forEach(u=>cxBy[u.unit_key]=u);
 const ICON_FACTION_PREFIX={"Dol Gul Dur":"dol_gul_dur","Khazad-dum":"khazadum","Lostladen Tribes":"lostladen_tribes","Woodland Realm":"woodland_realm","Iron Hills":"iron_hills","Ered Luin":"ered_luin","Ered Mithrin":"ered_mithrin","Dol Amroth":"dol_amroth","Anduin Vale":"anduin_vale"};
 const iconNormal=s=>String(s||"").toLowerCase().replace(/\([^)]*\)/g," ").replace(/(?:[_\s](?:uc\d*png|ucpng|v\d+png|v\d+|t[1-4]))+$/g," ").replace(/[_-]/g," ").replace(/\b(?:aor|oar|mercs?|av|wr|roh|mor|gun|dor|umb|kha|ise|iro|em|el|dg|dol|gon|khz|dun|wan|lin|lh)\b/g," ").replace(/\bwarroirs?\b/g,"warrior").replace(/\bgaurds?\b/g,"guard").replace(/\bcalvary\b/g,"cavalry").replace(/\bdunleding\b/g,"dunlending").replace(/\bdeckemen\b/g,"deckmen").replace(/\bvinter\b/g,"winter").replace(/\bolog hia\b/g,"olog hai").replace(/\bshirrifs\b/g,"shire reeves").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
 const iconPrefix=f=>ICON_FACTION_PREFIX[f]||String(f||"").toLowerCase().replace(/\s+/g,"_");
@@ -2830,11 +2599,18 @@ function unitTier(u){
   const tagged=String((u&&u.unit_key)||"").match(/(?:^|_)t([1-4])(?:_|$)/i)||String((u&&u.name)||"").match(/\bT([1-4])\b/i);
   return tagged?+tagged:Math.max(1,Math.min(4,Number(u&&u.tier)||1));
 }
-function recruitmentBarracksLevel(a){return a&&a.at&&P[a.at]?barracksLevel(P[a.at]):4;}
+const barracksLevel=p=>(p&&p.bld||[]).includes("barracks")?Math.max(1,Number((p.bldLevel||{}).barracks)||1):0;
+function recruitmentBarracksLevel(a){
+  const fid=a&&a.faction;
+  const at=a&&a.at&&P[a.at]?P[a.at]
+    :(sel&&P[sel]&&P[sel].owner===fid?P[sel]
+      :((F[fid]&&P[F[fid].capital])||S.provinces.find(p=>p.owner===fid)));
+  return barracksLevel(at);
+}
 S.armies.forEach(a=>{a.units??=null;});syncAll();
 
 /* ---------- state ---------- */
-let cxRealm="",cxFaction="",cxQ="",cxCls="",cxSort="tier",cxArmy=null,cxSel=null,cxInspect=null;
+let cxRealm="",cxQ="",cxCls="",cxSort="tier",cxArmy=null,cxSel=null,cxInspect=null;
 const cx=$("codex");
 
 /* ---------- filtering ---------- */
@@ -2843,11 +2619,8 @@ function cxList(){
   return CX.units.filter(u=>{
     if(cxInspect){if((cxInspect.units||[]).indexOf(u.unit_key)===-1)return false;}
     else{
-      // The GM may build narrative/event hosts from any faction and tier.
-      // Player plans remain limited to their realm and local Barracks tier.
-      if(!gm&&cxArmy&&!canServe(u,cxArmy.faction))return false;
-      if(!gm&&cxArmy&&!cxArmy.holy&&unitTier(u)>recruitmentBarracksLevel(cxArmy))return false;
-      if(gm&&cxFaction&&u.faction!==cxFaction)return false;
+      if(cxArmy&&!canServe(u,cxArmy.faction))return false;
+      if(cxArmy&&!cxArmy.holy&&unitTier(u)>recruitmentBarracksLevel(cxArmy))return false;
       if(!cxArmy&&cxRealm&&u.faction!==(REALM_OF[cxRealm]||cxRealm))return false;
     }
     if(cxCls&&u.class!==cxCls)return false;
@@ -2931,8 +2704,7 @@ function cxFoot(){
   const barracks=recruitmentBarracksLevel(cxArmy);
   $("cxMusterTag").innerHTML=(em?`<img src="${em}">`:"")+
     (cxArmy._plan?`Planning for ${esc(cxArmy.faction)} — copy it to your GM when done`
-                 :gm?`GM override: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · faction filter · all Tiers 1–4 available`
-                    :`Mustering: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · ${barracks?`Barracks ${barracks} (Tiers 1–${barracks})`:"No Barracks — construct Barracks I first"}`);
+                 :`Mustering: ${esc(cxArmy.name)} · ${esc(cxArmy.faction)} · ${barracks?`Barracks ${barracks} (Tiers 1–${barracks})`:"No Barracks — construct Barracks I first"}`);
   $("cxDone").textContent=cxArmy._plan?"Close plan":"Done mustering";
 }
 
@@ -2995,10 +2767,6 @@ function cxDetail(k){
 function openCodex(army){
   cxInspect=null;cx.classList.remove("inspect");
   cxArmy=army||null;cxSel=null;$("cxSide").classList.remove("open");
-  // Start GM mustering with the host's own faction selected. The dropdown can
-  // then deliberately switch to another realm or to All factions for events.
-  cxFaction=gm&&cxArmy?(REALM_OF[cxArmy.faction]||cxArmy.faction):"";
-  $("cxFaction").value=cxFaction;
   if(cxArmy&&Array.isArray(cxArmy.units)&&!cxArmy._plan){
     cxArmy._startCost=cxArmy.units.reduce((s,k)=>s+((cxBy[k]||{}).cost||0),0);
   }
@@ -3270,9 +3038,6 @@ function parsePlan(txt){
 function musterPlan(res){
   const at=(sel&&P[sel])?sel:(F[res.fid].capital||((S.provinces.find(p=>p.owner===res.fid)||{}).id));
   if(!at){toast(res.fid+" holds no ground to muster on");return;}
-  const level=barracksLevel(P[at]);
-  if(!gm&&!level){toast(`${at} has no Barracks — construct Barracks I before recruiting.`);return;}
-  if(!gm&&res.keys.some(k=>unitTier(cxBy[k])>level)){toast(`${at}'s Barracks is Level ${level}; that plan contains higher-tier units.`);return;}
   const bill=res.keys.reduce((t,k)=>t+((cxBy[k]&&cxBy[k].cost)||0),0);
   const ff=F[res.fid];
   if(ff.treasury<bill){toast(`${res.fid} cannot pay for this plan — ${bill.toLocaleString()} needed, ${ff.treasury.toLocaleString()} held`);return;}
@@ -3336,9 +3101,6 @@ $("cxMusterMap").onclick=()=>{
   if(!at)at=ff.capital;
   if(!at)at=(S.provinces.find(p=>p.owner===cxArmy.faction)||{}).id;
   if(!at){toast(`${cxArmy.faction} has no province on the map to muster on`);return;}
-  const level=barracksLevel(P[at]);
-  if(!gm&&!cxArmy.holy&&!level){toast(`${at} has no Barracks — construct Barracks I before recruiting.`);return;}
-  if(!gm&&!cxArmy.holy&&cxArmy.units.some(k=>unitTier(cxBy[k])>level)){toast(`${at}'s Barracks is Level ${level}; remove units above Tier ${level}.`);return;}
 
   snap("direct muster");
   const baseStart=cxArmy._startCost||0;
@@ -3369,10 +3131,8 @@ $("cxDone").onclick=()=>{
 $("cxRealms").innerHTML=`<button class="cxchip on" data-r="">All</button>`+
   CX.factions.map(f=>{const fid=REALM_FAC[f.name];const em=(fid&&EMBLEMS[fid])||(window.CODEX_FLAGS||{})[f.name];
     return `<button class="cxchip" data-r="${esc(f.name)}" title="${esc(f.name)}">${em?`<img src="${em}">`:""}${esc(fid||f.name)}</button>`;}).join("");
-CX_CLASSES.forEach(c=>{const o=document.createElement("option");o.value=c[0];o.textContent=c[1];$("cxCls").appendChild(o);});
-CX.factions.forEach(f=>{const name=typeof f==="string"?f:f.name;const o=document.createElement("option");o.value=name;o.textContent=name;$("cxFaction").appendChild(o);});
+CX.classes.forEach(c=>{const o=document.createElement("option");o.value=c[0];o.textContent=c[1];$("cxCls").appendChild(o);});
 $("cxQ").oninput=function(){cxQ=this.value;cxRender();};
-$("cxFaction").onchange=function(){cxFaction=this.value;cxRender();};
 $("cxCls").onchange=function(){cxCls=this.value;cxRender();};
 $("cxSort").onchange=function(){cxSort=this.value;cxRender();};
 cx.addEventListener("click",e=>{
@@ -3395,6 +3155,11 @@ cx.addEventListener("click",e=>{
     if(!cxArmy||(!gm&&!cxArmy._plan))return;
     if(cxArmy.units.length>=CAPU){toast("An army may field only "+CAPU+" units");return;}
     const uu=cxBy[ad.dataset.cxad],ff=F[cxArmy.faction];
+    const level=recruitmentBarracksLevel(cxArmy);
+    if(!cxArmy.holy&&unitTier(uu)>level){
+      toast(level?`Barracks ${level} can recruit only Tiers 1–${level}.`:"No Barracks — construct Barracks I first.");
+      return;
+    }
     const ucost=uu?(uu.cost||0):0;
     if(!cxArmy.holy){
       const currTotal=cxArmy.units.reduce((s,k)=>s+((cxBy[k]||{}).cost||0),0);
@@ -3644,7 +3409,7 @@ drawLedger=function(){
       logIt(`${win} won the battle at ${b.at} — ${Object.entries(losses).map(([f,n])=>
         `${f} lost ${n}${lostU[f]?` (${lostU[f].length} regiment${lostU[f].length===1?"":"s"})`:""}`).join(", ")}`,"battle");
     } else logIt(`Battle at ${b.at} ended without decision`,"battle");
-    for(const f in lostU)lostU[f].forEach(k=>logIt(`${f} struck ${cxBy[k]?unitDisplayName(cxBy[k]):k} from the rolls`,"battle"));
+    for(const f in lostU)lostU[f].forEach(k=>logIt(`${f} struck ${cxBy[k]?unitDisplayName(cxBy[k]):k}`,"battle"));
     S.armies=S.armies.filter(a=>a.men>0);
     S.battles.splice(i,1);
     drawLedger();legend();draw();
@@ -3758,12 +3523,8 @@ const _bTurn=$("bTurn").onclick;
 $("bTurn").onclick=function(){
   const mover=S.order[S.active];
   if(mover&&S.moved.indexOf(mover)<0)S.moved.push(mover);
-  /* Resolve the round when ALL factions are in S.moved, OR when the current
-     mover was the last slot in the turn order (handles fresh page-load where
-     S.moved was empty but S.active already pointed at the final faction). */
   const remaining=S.order.filter(id=>S.moved.indexOf(id)<0);
-  const wasLastSlot=(S.active>=S.order.length-1);
-  if(remaining.length&&!wasLastSlot){
+  if(remaining.length){
     /* Advance to the next realm that has NOT moved. The engine's own S.active++
        would walk back onto realms already played whenever the queue was reshuffled,
        handing them a second turn. */
@@ -3775,7 +3536,7 @@ $("bTurn").onclick=function(){
     toast(`${(F[S.order[S.active]]||{}).name||S.order[S.active]} to move`);
     return;
   }
-  /* every realm has played (or last slot reached): hand over to the engine to resolve the round */
+  /* every realm has played: hand over to the engine to resolve the round */
   S.active=S.order.length-1;
   const t0=S.turn;
   const res=_bTurn.apply(this,arguments);
@@ -3835,6 +3596,9 @@ window.insertRealmAt=function(id,pos){
   if(window.syncTurnActive)window.syncTurnActive();   /* new realm has not moved yet */
 };
 window.paintOrderIfOpen=function(){if($("ordM").classList.contains("open"))paintOrder();};
+})();
+</script></body>
+</html>
 })();
 </script></body>
 </html>
