@@ -2608,17 +2608,17 @@ $("bSave").onclick=()=>{
 /* ---------- one-button publish to GitHub ---------- */
 function b64u(t){return btoa(unescape(encodeURIComponent(t)));}
 function ghTarget(){
-  let o=null,r=null;
-  try{const sv=localStorage.getItem("rqRepo");if(sv){[o,r]=sv.split("/");}}catch(e){}
-  if(!o||!r){
-    const m=location.hostname.match(/^([^.]+)\.github\.io$/);
-    if(m){o=m[1];r=(location.pathname.split("/").filter(Boolean)[0]||"");}
+  let s="crokator0012-commits/ZeCampain";
+  try{
+    const sv=localStorage.getItem("rqRepo");
+    if(sv&&sv.trim()&&!sv.includes("SyedHassamJan")) s=sv.trim();
+  }catch(e){}
+  s=s.replace(/^https?:\/\/github\.com\//i,"").replace(/\.git$/i,"").replace(/^\/+|\/+$/g,"");
+  const parts=s.split("/");
+  if(parts.length>=2&&parts[0]&&parts[1]){
+    return {o:parts[0], r:parts[1]};
   }
-  if(!o||!r){
-    const t=prompt("Where does the campaign live? Enter USERNAME/repository (e.g. crokator0012-commits/ZeCampain):");
-    if(t&&t.indexOf("/")>0){try{localStorage.setItem("rqRepo",t.trim());}catch(e){}[o,r]=t.trim().split("/");}
-  }
-  return (o&&r)?{o,r}:null;
+  return {o:"crokator0012-commits", r:"ZeCampain"};
 }
 async function publishTurn(){
   const tgt=ghTarget();if(!tgt){toast("Publish cancelled");return;}
