@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Age of Men TDD</title>
+<title>TDD Age of Men</title>
+<meta name="application-name" content="TDD Age of Men">
+<meta name="apple-mobile-web-app-title" content="TDD Age of Men">
+<meta property="og:title" content="TDD Age of Men">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -474,7 +477,7 @@ input[type=file]{display:none}
 </div></div>
 <div id="rulesOv"><div class="hcard" style="width:640px;max-width:95vw;max-height:88vh;display:flex;flex-direction:column">
   <div id="rulesBody" style="flex:1;overflow-y:auto;padding-right:8px">
-<h2>Age of Men TDD</h2>
+<h2>TDD Age of Men</h2>
 <div class="rsub">Campaign rules</div>
 <h3>The Turn</h3>
 <p>Realms act in order: <b>Almohads → Portugal → Castile → Aragon → León → Navarre</b>. On your turn you move your hosts and give the GM your orders. When Navarre finishes, the <b>season resolves</b>: income and upkeep, siege clocks, construction, occupations annex, Zeal accrues. Four seasons make a year. The war ends when it is won.</p>
@@ -2612,7 +2615,7 @@ function ghTarget(){
     if(m){o=m[1];r=(location.pathname.split("/").filter(Boolean)[0]||"");}
   }
   if(!o||!r){
-    const t=prompt("Where does the campaign live? Enter USERNAME/repository (e.g. alfonso/reconquista):");
+    const t=prompt("Where does the campaign live? Enter USERNAME/repository (e.g. crokator0012-commits/ZeCampain):");
     if(t&&t.indexOf("/")>0){try{localStorage.setItem("rqRepo",t.trim());}catch(e){}[o,r]=t.trim().split("/");}
   }
   return (o&&r)?{o,r}:null;
